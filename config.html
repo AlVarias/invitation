@@ -3,591 +3,294 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Allen & Marry - Wedding Invitation</title>
-    <!-- Load Tailwind CSS -->
-    <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Load React & ReactDOM -->
-    <script src="https://unpkg.com/react@18/umd/react.production.min.js" crossorigin></script>
-    <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js" crossorigin></script>
-    <!-- Load Babel to compile JSX -->
-    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <title>Wedding App Configurator</title>
+    <style>
+        body { font-family: system-ui, sans-serif; background: #FDFCF8; color: #2A3B2E; max-width: 900px; margin: 0 auto; padding: 2rem; }
+        .card { background: white; padding: 2rem; border-radius: 1rem; box-shadow: 0 4px 6px rgba(0,0,0,0.05); border: 1px solid #EAD5D5; margin-bottom: 2rem; }
+        .form-grid { display: grid; grid-template-columns: 1fr; gap: 1.5rem; }
+        @media (min-width: 768px) { .form-grid { grid-template-columns: 1fr 1fr; } }
+        .full-width { grid-column: 1 / -1; }
+        .form-group { margin-bottom: 0; }
+        label { display: block; font-size: 0.875rem; font-weight: bold; text-transform: uppercase; letter-spacing: 0.1em; color: #93A897; margin-bottom: 0.5rem; }
+        input[type="text"], input[type="date"], input[type="url"], input[type="file"], textarea { width: 100%; padding: 0.75rem; border: 1px solid #E8ECE6; border-radius: 0.5rem; box-sizing: border-box; font-family: inherit; }
+        textarea { resize: vertical; min-height: 80px; }
+        .note { font-size: 0.8rem; color: #6B7B6D; margin-top: 0.25rem; }
+        h1 { font-family: serif; font-size: 2.5rem; text-align: center; margin-bottom: 2rem; }
+        h2 { font-family: serif; font-size: 1.5rem; color: #D4A5A5; margin-top: 0; margin-bottom: 1.5rem; border-bottom: 1px solid #E8ECE6; padding-bottom: 0.5rem; }
+        button { background: #D4A5A5; color: white; border: none; padding: 1rem 2rem; font-size: 1.125rem; text-transform: uppercase; letter-spacing: 0.1em; border-radius: 0.5rem; cursor: pointer; width: 100%; transition: background 0.3s; font-weight: bold; margin-bottom: 4rem; }
+        button:hover { background: #C28D8D; }
+    </style>
 </head>
 <body>
-    <div id="root"></div>
 
-    <script type="text/babel">
-        const { useState, useEffect } = React;
+    <h1>Invitation Configurator</h1>
 
-        // --- Custom Icon Components (Replacing Lucide Imports) ---
-        const Icon = ({ name, size = 24, className = "", strokeWidth = 2 }) => {
-            const paths = {
-                Heart: <path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/>,
-                MapPin: <><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></>,
-                Calendar: <><rect width="18" height="18" x="3" y="4" rx="2" ry="2"/><line x1="16" x2="16" y1="2" y2="6"/><line x1="8" x2="8" y1="2" y2="6"/><line x1="3" x2="21" y1="10" y2="10"/></>,
-                Clock: <><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></>,
-                Utensils: <><path d="M3 2v7c0 1.1.9 2 2 2h4a2 2 0 0 0 2-2V2"/><path d="M7 2v20"/><path d="M21 15V2v0a5 5 0 0 0-5 5v6c0 1.1.9 2 2 2h3Zm0 0v7"/></>,
-                Music: <><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></>,
-                ChevronDown: <polyline points="6 9 12 15 18 9"/>,
-                CheckCircle: <><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></>,
-                Send: <><line x1="22" x2="11" y1="2" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></>,
-                Camera: <><path d="M14.5 4h-5L7 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3l-2.5-3z"/><circle cx="12" cy="13" r="3"/></>,
-                Sparkles: <><path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z"/><path d="M5 3v4"/><path d="M19 17v4"/><path d="M3 5h4"/><path d="M17 19h4"/></>,
-                Flower2: <><path d="M12 5a3 3 0 1 1-3 3m3-3a3 3 0 1 0 3 3m-3-3v14m-4 0a4 4 0 0 0 4-4m0 4a4 4 0 0 1-4-4"/></>,
-                Leaf: <><path d="M11 20A7 7 0 0 1 9.8 6.1C15.5 5 17 4.48 19 2c1 2 2 4.18 2 8 0 5.5-4.78 10-10 10Z"/><path d="M2 21c0-3 1.85-5.36 5.08-6C9.5 14.52 12 13 13 12"/></>,
-                Gift: <><rect x="3" y="8" width="18" height="4" rx="1"/><path d="M12 8v13"/><path d="M19 12v7a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2v-7"/><path d="M7.5 8a2.5 2.5 0 0 1 0-5A4.8 8 0 0 1 12 8a4.8 8 0 0 1 4.5-5 2.5 2.5 0 0 1 0 5"/></>,
-                Copy: <><rect width="14" height="14" x="8" y="8" rx="2" ry="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></>,
-                Check: <polyline points="20 6 9 17 4 12"/>,
-                Navigation: <polygon points="3 11 22 2 13 21 11 13 3 11"/>,
-                Loader2: <path className="animate-spin" d="M21 12a9 9 0 1 1-6.219-8.56"/>
-            };
-            return (
-                <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={strokeWidth} strokeLinecap="round" strokeLinejoin="round" className={className}>
-                    {paths[name]}
-                </svg>
-            );
+    <form id="configForm">
+        <!-- Basic Information -->
+        <div class="card">
+            <h2>Basic Details</h2>
+            <div class="form-grid">
+                <div class="form-group">
+                    <label>Groom's Name</label>
+                    <input type="text" id="groomName" value="Allen" required>
+                </div>
+                <div class="form-group">
+                    <label>Bride's Name</label>
+                    <input type="text" id="brideName" value="Marry" required>
+                </div>
+                <div class="form-group">
+                    <label>Wedding Date</label>
+                    <input type="date" id="weddingDate" value="2026-09-08" required>
+                </div>
+                <div class="form-group">
+                    <label>RSVP Email Address</label>
+                    <input type="text" id="rsvpEmail" value="allenvarias@gmail.com" required>
+                </div>
+            </div>
+        </div>
+
+        <!-- Locations -->
+        <div class="card">
+            <h2>Locations & Times</h2>
+            <div class="form-grid">
+                <div class="form-group">
+                    <label>Ceremony Time</label>
+                    <input type="text" id="ceremonyTime" value="3:00 PM Sharp" required>
+                </div>
+                <div class="form-group">
+                    <label>Ceremony Location Name</label>
+                    <input type="text" id="ceremonyName" value="Auckland Botanic Gardens" required>
+                </div>
+                <div class="form-group full-width">
+                    <label>Ceremony Address</label>
+                    <input type="text" id="ceremonyAddress" value="102 Hill Road, Manurewa, Auckland" required>
+                </div>
+
+                <div class="form-group mt-4">
+                    <label>Reception Time</label>
+                    <input type="text" id="receptionTime" value="6:00 PM - Late" required>
+                </div>
+                <div class="form-group mt-4">
+                    <label>Reception Location Name</label>
+                    <input type="text" id="receptionName" value="The Estate Glasshouse" required>
+                </div>
+                <div class="form-group full-width">
+                    <label>Reception Address (or Note)</label>
+                    <input type="text" id="receptionAddress" value="A short walk from the ceremony lawn." required>
+                </div>
+
+                <div class="form-group full-width mt-4">
+                    <label>Google Maps Embed URL</label>
+                    <input type="text" id="mapUrl" value="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3187.585250953258!2d174.90731057639535!3d-37.01487227218659!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x6d0d4e76d33aeb69%3A0xf00ef62249cbb90!2sAuckland%20Botanic%20Gardens!5e0!3m2!1sen!2snz!4v1700000000000!5m2!1sen!2snz" required>
+                    <p class="note">Go to Google Maps -> Share -> Embed a Map -> Copy the "src" URL.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Registry & Bank Details -->
+        <div class="card">
+            <h2>Registry & Bank Details</h2>
+            <div class="form-grid">
+                <div class="form-group">
+                    <label>Bank Name</label>
+                    <input type="text" id="bankName" value="Spring Garden Bank" required>
+                </div>
+                <div class="form-group">
+                    <label>Account Name</label>
+                    <input type="text" id="accountName" value="Allen & Marry" required>
+                </div>
+                <div class="form-group full-width">
+                    <label>Account Number</label>
+                    <input type="text" id="accountNumber" value="12-3456-7890123-00" required>
+                </div>
+            </div>
+        </div>
+
+        <!-- Our Story -->
+        <div class="card">
+            <h2>Our Story</h2>
+            <div class="form-grid">
+                <div class="form-group">
+                    <label>Story 1: Date</label>
+                    <input type="text" id="story1Date" value="October 2022" required>
+                </div>
+                <div class="form-group">
+                    <label>Story 1: Title</label>
+                    <input type="text" id="story1Title" value="The First Meeting" required>
+                </div>
+                <div class="form-group full-width">
+                    <label>Story 1: Details</label>
+                    <textarea id="story1Text" required>We bumped into each other at a mutual friend's garden party. A spilled drink and a laugh later, we couldn't stop talking.</textarea>
+                </div>
+
+                <div class="form-group mt-4">
+                    <label>Story 2: Date</label>
+                    <input type="text" id="story2Date" value="August 2025" required>
+                </div>
+                <div class="form-group mt-4">
+                    <label>Story 2: Title</label>
+                    <input type="text" id="story2Title" value="The Proposal" required>
+                </div>
+                <div class="form-group full-width">
+                    <label>Story 2: Details</label>
+                    <textarea id="story2Text" required>During a quiet morning walk through a field of spring wildflowers, Allen finally popped the question.</textarea>
+                </div>
+            </div>
+        </div>
+
+        <!-- Image Uploads / Links -->
+        <div class="card">
+            <h2>Photos & Imagery</h2>
+            <p class="note mb-4" style="margin-bottom: 1.5rem;">Upload your photos below. They will be embedded directly into the config file so they appear instantly in your app! (If left empty, placeholder images will be used).</p>
+            
+            <div class="form-grid">
+                <div class="form-group full-width">
+                    <label>Hero Background Image</label>
+                    <input type="file" id="heroImage" accept="image/*">
+                </div>
+
+                <div class="form-group">
+                    <label>Ceremony Image</label>
+                    <input type="file" id="ceremonyImage" accept="image/*">
+                </div>
+                <div class="form-group">
+                    <label>Reception Image</label>
+                    <input type="file" id="receptionImage" accept="image/*">
+                </div>
+
+                <!-- Gallery Images -->
+                <div class="form-group mt-4">
+                    <label>Gallery Image 1</label>
+                    <input type="file" id="gallery1" accept="image/*">
+                </div>
+                <div class="form-group mt-4">
+                    <label>Gallery Image 2</label>
+                    <input type="file" id="gallery2" accept="image/*">
+                </div>
+                <div class="form-group mt-4">
+                    <label>Gallery Image 3</label>
+                    <input type="file" id="gallery3" accept="image/*">
+                </div>
+
+                <!-- Attire Inspiration -->
+                <div class="form-group mt-4">
+                    <label>Attire Inspiration 1</label>
+                    <input type="file" id="attire1" accept="image/*">
+                </div>
+                <div class="form-group mt-4">
+                    <label>Attire Inspiration 2</label>
+                    <input type="file" id="attire2" accept="image/*">
+                </div>
+                <div class="form-group mt-4">
+                    <label>Attire Inspiration 3</label>
+                    <input type="file" id="attire3" accept="image/*">
+                </div>
+            </div>
+        </div>
+
+        <button type="submit">Download config.json</button>
+    </form>
+
+    <script>
+        // Default placeholder images
+        const imageBase64 = {
+            heroImage: "https://images.unsplash.com/photo-1519225421980-715cb02151ff?ixlib=rb-4.0.3&auto=format&fit=crop&w=2070&q=80",
+            ceremonyImage: "https://images.unsplash.com/photo-1469334031218-e382a71b716b?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80",
+            receptionImage: "https://images.unsplash.com/photo-1519167758481-83f550bb49b3?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80",
+            gallery1: "https://images.unsplash.com/photo-1606800052052-a08af7148866?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
+            gallery2: "https://images.unsplash.com/photo-1583939003579-730e3918a45a?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
+            gallery3: "https://images.unsplash.com/photo-1520854221256-17451cc331bf?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
+            attire1: "https://images.unsplash.com/photo-1496747611176-843222e1e57c?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80",
+            attire2: "https://images.unsplash.com/photo-1594938298596-70f56bf3ac59?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80",
+            attire3: "https://images.unsplash.com/photo-1566737236500-c8ac43014a67?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80"
         };
 
-        const Heart = (props) => <Icon name="Heart" {...props} />;
-        const MapPin = (props) => <Icon name="MapPin" {...props} />;
-        const Calendar = (props) => <Icon name="Calendar" {...props} />;
-        const Clock = (props) => <Icon name="Clock" {...props} />;
-        const Utensils = (props) => <Icon name="Utensils" {...props} />;
-        const Music = (props) => <Icon name="Music" {...props} />;
-        const ChevronDown = (props) => <Icon name="ChevronDown" {...props} />;
-        const CheckCircle = (props) => <Icon name="CheckCircle" {...props} />;
-        const Send = (props) => <Icon name="Send" {...props} />;
-        const Camera = (props) => <Icon name="Camera" {...props} />;
-        const Sparkles = (props) => <Icon name="Sparkles" {...props} />;
-        const Flower2 = (props) => <Icon name="Flower2" {...props} />;
-        const Leaf = (props) => <Icon name="Leaf" {...props} />;
-        const Gift = (props) => <Icon name="Gift" {...props} />;
-        const Copy = (props) => <Icon name="Copy" {...props} />;
-        const Check = (props) => <Icon name="Check" {...props} />;
-        const Navigation = (props) => <Icon name="Navigation" {...props} />;
-        const Loader2 = (props) => <Icon name="Loader2" {...props} />;
-
-        // --- Main Application ---
-        const WEDDING_DATE = new Date('2026-09-08T15:00:00').getTime(); 
-
-        function WeddingInvitation() {
-            const [introState, setIntroState] = useState('initial');
-            const [timeLeft, setTimeLeft] = useState(calculateTimeLeft());
-            const [isScrolled, setIsScrolled] = useState(false);
-            const [copied, setCopied] = useState(false);
-            
-            const [rsvpStatus, setRsvpStatus] = useState('pending');
-            const [isSubmitting, setIsSubmitting] = useState(false);
-            const [rsvpError, setRsvpError] = useState('');
-            const [formData, setFormData] = useState({
-                firstName: '', lastName: '', email: '', attending: 'yes', guestCount: '1', dietary: '', songRequest: ''
-            });
-
-            const openEnvelope = () => {
-                if (introState !== 'initial') return;
-                setIntroState('opening');
-                setTimeout(() => setIntroState('extracting'), 800);
-                setTimeout(() => setIntroState('unfolding'), 1800);
-                setTimeout(() => setIntroState('reading'), 2800);
-                setTimeout(() => setIntroState('fading'), 5800);
-                setTimeout(() => setIntroState('done'), 6800);
-            };
-
-            useEffect(() => {
-                if (introState !== 'done') document.body.style.overflow = 'hidden';
-                else document.body.style.overflow = 'auto';
-                return () => { document.body.style.overflow = 'auto'; };
-            }, [introState]);
-
-            useEffect(() => {
-                const timer = setInterval(() => setTimeLeft(calculateTimeLeft()), 1000);
-                return () => clearInterval(timer);
-            }, []);
-
-            useEffect(() => {
-                const handleScroll = () => setIsScrolled(window.scrollY > 50);
-                window.addEventListener('scroll', handleScroll);
-                return () => window.removeEventListener('scroll', handleScroll);
-            }, []);
-
-            function calculateTimeLeft() {
-                const now = new Date().getTime();
-                const difference = WEDDING_DATE - now;
-                if (difference > 0) {
-                    return {
-                        days: Math.floor(difference / (1000 * 60 * 60 * 24)),
-                        hours: Math.floor((difference / (1000 * 60 * 60)) % 24),
-                        minutes: Math.floor((difference / 1000 / 60) % 60),
-                        seconds: Math.floor((difference / 1000) % 60)
-                    };
-                }
-                return { days: 0, hours: 0, minutes: 0, seconds: 0 };
+        // File upload handler
+        function handleFile(event, key) {
+            const file = event.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    imageBase64[key] = e.target.result;
+                };
+                reader.readAsDataURL(file);
             }
-
-            const handleInputChange = (e) => {
-                const { name, value } = e.target;
-                setFormData(prev => ({ ...prev, [name]: value }));
-            };
-
-            const handleRsvpSubmit = async (e) => {
-                e.preventDefault();
-                setIsSubmitting(true);
-                setRsvpError('');
-
-                try {
-                    const response = await fetch("https://formsubmit.co/ajax/allenvarias@gmail.com", {
-                        method: "POST",
-                        headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
-                        body: JSON.stringify({
-                            _subject: `New RSVP from ${formData.firstName} ${formData.lastName}!`,
-                            Name: `${formData.firstName} ${formData.lastName}`,
-                            Email: formData.email,
-                            Attending: formData.attending === 'yes' ? '✅ Joyfully Accept' : '❌ Regretfully Decline',
-                            Guests: formData.attending === 'yes' ? formData.guestCount : '0',
-                            DietaryRequirements: formData.dietary || 'None specified',
-                            SongRequest: formData.songRequest || 'None specified'
-                        })
-                    });
-
-                    if (response.ok) setRsvpStatus('submitted');
-                    else setRsvpError("Something went wrong while sending your RSVP. Please try again.");
-                } catch (error) {
-                    setRsvpError("Network error. Please check your connection and try again.");
-                } finally {
-                    setIsSubmitting(false);
-                }
-            };
-
-            const scrollTo = (id) => {
-                const element = document.getElementById(id);
-                if (element) element.scrollIntoView({ behavior: 'smooth' });
-            };
-
-            const copyToClipboard = (text) => {
-                const textArea = document.createElement("textarea");
-                textArea.value = text;
-                document.body.appendChild(textArea);
-                textArea.select();
-                try {
-                    document.execCommand('copy');
-                    setCopied(true);
-                    setTimeout(() => setCopied(false), 2000);
-                } catch (err) {}
-                document.body.removeChild(textArea);
-            };
-
-            const getEnvelopeClasses = () => {
-                switch(introState) {
-                    case 'extracting':
-                    case 'unfolding':
-                    case 'reading': return 'translate-y-[600px] opacity-0 transition-all duration-[1500ms] ease-in pointer-events-none';
-                    case 'fading': return 'hidden';
-                    default: return 'translate-y-0 opacity-100 transition-all duration-500';
-                }
-            };
-
-            return (
-                <div className="min-h-screen bg-[#FDFCF8] text-[#3A4A3E] font-sans selection:bg-[#EAD5D5] selection:text-[#2A3B2E] relative">
-                    
-                    {introState !== 'done' && (
-                        <div className={`fixed inset-0 z-[9999] flex flex-col items-center justify-center bg-[#150f0f] transition-opacity duration-1000 cursor-pointer ${introState === 'fading' ? 'opacity-0 pointer-events-none' : 'opacity-100'}`} onClick={openEnvelope}>
-                            <div className={`absolute top-[15%] text-[#D4A5A5] uppercase tracking-[0.4em] text-sm animate-pulse transition-opacity ${introState !== 'initial' ? 'opacity-0' : 'opacity-100'}`}>
-                                Tap anywhere to open
-                            </div>
-
-                            <div className="relative w-[340px] h-[230px] flex justify-center items-center" style={{ perspective: '1200px' }}>
-                                <div className={`absolute inset-0 bg-[#7d1414] rounded-md shadow-inner border border-[#6b1010] z-10 ${getEnvelopeClasses()}`}></div>
-
-                                <div className={`absolute w-[280px] h-[320px] transition-all duration-[1200ms] ease-in-out pointer-events-none`}
-                                    style={{
-                                        transform: introState === 'initial' || introState === 'opening' ? 'translateY(50px) scale(0.85)' : 
-                                                introState === 'extracting' ? 'translateY(-80px) scale(0.95)' :
-                                                introState === 'unfolding' ? 'translateY(-40px) scale(1)' :
-                                                'translateY(-40px) scale(1.15)',
-                                        opacity: introState === 'fading' ? 0 : 1,
-                                        zIndex: 20,
-                                        perspective: '1200px'
-                                    }}>
-                                    <div className="absolute top-0 left-0 w-full h-[160px] bg-[#FDFCF8] rounded-t-md p-6 flex flex-col items-center justify-end border-x border-t border-[#EAD5D5] z-10 shadow-sm">
-                                    <div className="absolute top-0 left-0 w-full h-3 bg-[#93A897] rounded-t-md"></div>
-                                    <Flower2 size={32} className="text-[#D4A5A5] mb-3 opacity-80" strokeWidth={1.5} />
-                                    <p className="uppercase tracking-[0.2em] text-[#93A897] text-[10px] mb-1">You are invited to</p>
-                                    </div>
-
-                                    <div className="absolute top-[160px] left-0 w-full h-[160px] origin-top transition-transform duration-1000 ease-[cubic-bezier(0.34,1.56,0.64,1)] z-20 shadow-2xl"
-                                        style={{ transformStyle: 'preserve-3d', transform: introState === 'initial' || introState === 'opening' || introState === 'extracting' ? 'rotateX(-180deg)' : 'rotateX(0deg)' }}>
-                                        <div className="absolute inset-0 bg-[#F6ECEC] rounded-md border border-[#EAD5D5] flex items-center justify-center" style={{ backfaceVisibility: 'hidden', transform: 'rotateX(180deg)' }}>
-                                            <div className="w-16 h-16 rounded-full border border-[#D4A5A5] flex items-center justify-center bg-[#FDFCF8] shadow-sm">
-                                            <span className="font-serif text-[#93A897] text-xl tracking-wider">A&M</span>
-                                            </div>
-                                        </div>
-
-                                        <div className="absolute inset-0 bg-[#FDFCF8] rounded-b-md border-x border-b border-[#EAD5D5] p-6 flex flex-col items-center justify-start" style={{ backfaceVisibility: 'hidden', transform: 'rotateX(0deg)' }}>
-                                        <h2 className="font-serif text-2xl text-[#2A3B2E] text-center leading-tight mb-4 mt-2">
-                                            The Wedding of<br/>Allen & Marry
-                                        </h2>
-                                        <div className="w-12 h-[1px] bg-[#D4A5A5] mb-4"></div>
-                                        <p className="text-[#93A897] uppercase tracking-widest text-[9px] text-center leading-relaxed">
-                                            8 September 2026<br/>Auckland, New Zealand
-                                        </p>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <div className={`absolute inset-0 z-30 pointer-events-none drop-shadow-2xl ${getEnvelopeClasses()}`}>
-                                <div className="absolute top-0 left-0 w-full h-full bg-[#A31D1D] rounded-bl-md" style={{ clipPath: 'polygon(0 0, 50% 55%, 0 100%)' }}></div>
-                                <div className="absolute top-0 left-0 w-full h-full bg-[#A31D1D] rounded-br-md" style={{ clipPath: 'polygon(100% 0, 50% 55%, 100% 100%)' }}></div>
-                                <div className="absolute top-0 left-0 w-full h-full bg-[#B82222] rounded-b-md" style={{ clipPath: 'polygon(0 100%, 50% 55%, 100% 100%)' }}></div>
-                                </div>
-
-                                <div className={`absolute top-0 left-0 w-full h-full origin-top transition-transform duration-700 ease-in-out z-40 ${getEnvelopeClasses()} ${(introState !== 'initial') ? 'rotate-x-180' : ''}`} style={{ transformStyle: 'preserve-3d' }}>
-                                <div className="w-full h-[65%] bg-[#C92A2A] rounded-t-md" style={{ clipPath: 'polygon(0 0, 100% 0, 50% 100%)', backfaceVisibility: 'hidden' }}></div>
-                                <div className="w-full h-[65%] bg-[#8B1717] rounded-t-md absolute top-0 left-0" style={{ clipPath: 'polygon(0 0, 100% 0, 50% 100%)', transform: 'rotateY(180deg)', backfaceVisibility: 'hidden' }}></div>
-                                
-                                <div className={`absolute top-[65%] left-1/2 -translate-x-1/2 -translate-y-1/2 w-16 h-16 bg-gradient-to-br from-[#E6C27A] to-[#A37A2C] rounded-full flex items-center justify-center shadow-xl border-2 border-[#D4AF37] transition-opacity duration-300 ${introState !== 'initial' ? 'opacity-0' : 'opacity-100'}`} style={{ backfaceVisibility: 'hidden' }}>
-                                    <div className="w-14 h-14 rounded-full border border-[#B38A36]/50 flex items-center justify-center">
-                                    <span className="font-serif text-[#5c4411] text-xl font-bold">A&M</span>
-                                    </div>
-                                </div>
-                                </div>
-                            </div>
-                        </div>
-                    )}
-
-                    <nav className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ${isScrolled ? 'bg-white/95 backdrop-blur-md shadow-sm py-4' : 'bg-transparent py-6'}`}>
-                        <div className="max-w-5xl mx-auto px-4 flex justify-center items-center space-x-3 md:space-x-8 text-xs md:text-sm uppercase tracking-[0.1em] md:tracking-[0.2em] text-[#7A8A7D] font-medium">
-                        <button onClick={() => scrollTo('home')} className="hover:text-[#D4A5A5] transition-colors">Home</button>
-                        <button onClick={() => scrollTo('gallery')} className="hover:text-[#D4A5A5] transition-colors">Gallery</button>
-                        <button onClick={() => scrollTo('details')} className="hover:text-[#D4A5A5] transition-colors">Details</button>
-                        <button onClick={() => scrollTo('gifts')} className="hidden sm:inline-block hover:text-[#D4A5A5] transition-colors">Gifts</button>
-                        <button onClick={() => scrollTo('rsvp')} className="px-4 py-2 bg-[#D4A5A5] text-white rounded-full hover:bg-[#C28D8D] transition-all">RSVP</button>
-                        </div>
-                    </nav>
-
-                    <section id="home" className="relative min-h-screen flex flex-col items-center justify-center px-4 overflow-hidden">
-                        <div className="absolute inset-0 z-0">
-                        <img src="https://images.unsplash.com/photo-1519225421980-715cb02151ff?ixlib=rb-4.0.3&auto=format&fit=crop&w=2070&q=80" alt="Allen and Marry" className="w-full h-full object-cover object-center opacity-40" />
-                        <div className="absolute inset-0 bg-gradient-to-b from-[#FDFCF8]/80 via-[#FDFCF8]/60 to-[#FDFCF8]"></div>
-                        </div>
-
-                        <div className="z-10 text-center flex flex-col items-center space-y-8 max-w-4xl mx-auto mt-16 p-8 bg-white/40 backdrop-blur-sm rounded-3xl border border-white/50 shadow-2xl">
-                        <p className="uppercase tracking-[0.3em] text-[#5A6A5E] text-sm md:text-base animate-fade-in font-bold">8 September 2026</p>
-                        <h1 className="font-serif text-6xl md:text-8xl lg:text-9xl text-[#2A3B2E] leading-tight tracking-tight shadow-sm">Allen & Marry</h1>
-                        
-                        <div className="flex items-center space-x-6 text-[#D4A5A5]">
-                            <span className="w-16 h-[1px] bg-[#93A897]"></span>
-                            <Flower2 size={24} className="text-[#D4A5A5]" strokeWidth={1.5} />
-                            <span className="w-16 h-[1px] bg-[#93A897]"></span>
-                        </div>
-                        
-                        <div className="space-y-2 text-center animate-fade-in animation-delay-500">
-                            <p className="text-xl md:text-3xl font-serif italic text-[#3A4A3E]">We are getting married</p>
-                            <p className="text-lg md:text-xl text-[#5A6A5E] uppercase tracking-widest font-medium">Auckland, New Zealand</p>
-                        </div>
-
-                        <button onClick={() => scrollTo('rsvp')} className="mt-12 px-10 py-4 bg-[#93A897] text-white rounded-full uppercase tracking-[0.2em] text-sm hover:bg-[#7A8A7D] hover:shadow-xl transition-all transform hover:-translate-y-1">RSVP Now</button>
-                        </div>
-
-                        <div className="absolute bottom-8 z-10 animate-bounce cursor-pointer text-[#5A6A5E] hover:text-[#D4A5A5] transition-colors" onClick={() => scrollTo('countdown')}>
-                        <ChevronDown size={36} strokeWidth={1.5} />
-                        </div>
-                    </section>
-
-                    <section id="countdown" className="py-24 bg-white px-4 border-b border-[#F0EBEB]">
-                        <div className="max-w-4xl mx-auto text-center">
-                        <p className="uppercase tracking-[0.2em] text-[#D4A5A5] text-sm mb-4">The Countdown</p>
-                        <h2 className="font-serif text-4xl md:text-5xl text-[#2A3B2E] mb-16">Waiting for the Big Day</h2>
-                        
-                        <div className="flex flex-wrap justify-center gap-4 md:gap-8">
-                            {[{ label: 'Days', value: timeLeft.days }, { label: 'Hours', value: timeLeft.hours }, { label: 'Minutes', value: timeLeft.minutes }, { label: 'Seconds', value: timeLeft.seconds }].map((unit, idx) => (
-                            <div key={idx} className="bg-[#FDFCF8] w-24 h-24 md:w-36 md:h-36 flex flex-col items-center justify-center rounded-full shadow-sm border border-[#EAD5D5] transform transition hover:scale-105">
-                                <span className="font-serif text-3xl md:text-5xl text-[#2A3B2E] mb-1">{unit.value}</span>
-                                <span className="text-xs md:text-sm uppercase tracking-[0.2em] text-[#93A897]">{unit.label}</span>
-                            </div>
-                            ))}
-                        </div>
-                        </div>
-                    </section>
-
-                    <section id="gallery" className="py-24 px-4 bg-[#F8FAF8]">
-                        <div className="max-w-6xl mx-auto">
-                        <div className="text-center mb-16">
-                            <p className="uppercase tracking-[0.2em] text-[#D4A5A5] text-sm mb-4">Our Memories</p>
-                            <h2 className="font-serif text-4xl md:text-5xl text-[#2A3B2E]">The Happy Couple</h2>
-                        </div>
-
-                        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-20">
-                            <div className="h-[400px] rounded-2xl overflow-hidden shadow-lg group">
-                            <img src="https://images.unsplash.com/photo-1606800052052-a08af7148866?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" alt="Engagement 1" className="w-full h-full object-cover transform group-hover:scale-110 transition-transform duration-700" />
-                            </div>
-                            <div className="h-[400px] rounded-2xl overflow-hidden shadow-lg md:-translate-y-8 group">
-                            <img src="https://images.unsplash.com/photo-1583939003579-730e3918a45a?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" alt="Engagement 2" className="w-full h-full object-cover transform group-hover:scale-110 transition-transform duration-700" />
-                            </div>
-                            <div className="h-[400px] rounded-2xl overflow-hidden shadow-lg group">
-                            <img src="https://images.unsplash.com/photo-1520854221256-17451cc331bf?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" alt="Engagement 3" className="w-full h-full object-cover transform group-hover:scale-110 transition-transform duration-700" />
-                            </div>
-                        </div>
-
-                        <div className="max-w-3xl mx-auto space-y-12 relative before:absolute before:inset-0 before:ml-5 before:-translate-x-px md:before:mx-auto md:before:translate-x-0 before:h-full before:w-0.5 before:bg-gradient-to-b before:from-transparent before:via-[#93A897] before:to-transparent">
-                            <div className="relative flex items-center justify-between md:justify-normal md:odd:flex-row-reverse">
-                            <div className="flex items-center justify-center w-10 h-10 rounded-full border-4 border-[#F8FAF8] bg-[#93A897] text-white shadow-md shrink-0 md:order-1 md:-translate-x-1/2 md:translate-x-1/2">
-                                <Heart size={16} />
-                            </div>
-                            <div className="w-[calc(100%-4rem)] md:w-[calc(50%-2.5rem)] bg-white p-6 rounded-2xl shadow-sm border border-[#E8ECE6]">
-                                <div className="text-[#D4A5A5] font-medium tracking-widest text-xs uppercase mb-1">October 2022</div>
-                                <h3 className="font-serif text-xl text-[#2A3B2E] mb-2">The First Meeting</h3>
-                                <p className="text-[#6B7B6D] text-sm">We bumped into each other at a mutual friend's garden party. A spilled drink and a laugh later, we couldn't stop talking.</p>
-                            </div>
-                            </div>
-
-                            <div className="relative flex items-center justify-between md:justify-normal md:odd:flex-row-reverse">
-                            <div className="flex items-center justify-center w-10 h-10 rounded-full border-4 border-[#F8FAF8] bg-[#D4A5A5] text-white shadow-md shrink-0 md:order-1 md:translate-x-1/2">
-                                <Sparkles size={16} />
-                            </div>
-                            <div className="w-[calc(100%-4rem)] md:w-[calc(50%-2.5rem)] bg-white p-6 rounded-2xl shadow-sm border border-[#E8ECE6]">
-                                <div className="text-[#93A897] font-medium tracking-widest text-xs uppercase mb-1">August 2025</div>
-                                <h3 className="font-serif text-xl text-[#2A3B2E] mb-2">The Proposal</h3>
-                                <p className="text-[#6B7B6D] text-sm">During a quiet morning walk through a field of spring wildflowers, Allen finally popped the question.</p>
-                            </div>
-                            </div>
-                        </div>
-                        </div>
-                    </section>
-
-                    <section id="details" className="py-24 px-4 bg-white relative">
-                        <div className="max-w-6xl mx-auto relative z-10">
-                        <div className="text-center mb-16">
-                            <p className="uppercase tracking-[0.2em] text-[#93A897] text-sm mb-4">When & Where</p>
-                            <h2 className="font-serif text-4xl md:text-5xl text-[#2A3B2E] mb-6">Event Details</h2>
-                            <p className="text-[#6B7B6D] max-w-xl mx-auto">Join us for a beautiful afternoon ceremony followed by an evening of dinner and dancing in the glasshouse.</p>
-                        </div>
-
-                        <div className="grid lg:grid-cols-2 gap-10 mb-16">
-                            <div className="bg-[#FDFCF8] rounded-3xl overflow-hidden shadow-lg border border-[#EAD5D5] group flex flex-col">
-                            <div className="h-56 overflow-hidden relative">
-                                <img src="https://images.unsplash.com/photo-1469334031218-e382a71b716b?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80" alt="Ceremony Garden" className="w-full h-full object-cover transform group-hover:scale-105 transition-transform duration-700" />
-                                <div className="absolute inset-0 bg-[#2A3B2E]/20"></div>
-                                <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-16 h-16 bg-white/90 backdrop-blur rounded-full flex items-center justify-center shadow-lg">
-                                <Flower2 size={28} className="text-[#D4A5A5]" />
-                                </div>
-                            </div>
-                            <div className="p-8 md:p-10 flex-grow">
-                                <h3 className="font-serif text-3xl text-[#2A3B2E] mb-2">The Ceremony</h3>
-                                <p className="uppercase tracking-widest text-[#93A897] text-sm mb-8">Unplugged Garden Ceremony</p>
-                                <ul className="space-y-6">
-                                <li className="flex items-start text-[#5A6A5E]">
-                                    <Clock className="w-6 h-6 mr-4 text-[#D4A5A5] shrink-0" />
-                                    <div><strong className="block font-medium text-[#2A3B2E]">3:00 PM Sharp</strong><span className="text-sm">Please arrive by 2:30 PM.</span></div>
-                                </li>
-                                <li className="flex items-start text-[#5A6A5E]">
-                                    <MapPin className="w-6 h-6 mr-4 text-[#D4A5A5] shrink-0" />
-                                    <div><strong className="block font-medium text-[#2A3B2E]">Auckland Botanic Gardens</strong><span className="text-sm">102 Hill Road, Manurewa, Auckland</span></div>
-                                </li>
-                                </ul>
-                            </div>
-                            </div>
-
-                            <div className="bg-[#FDFCF8] rounded-3xl overflow-hidden shadow-lg border border-[#DCE5DE] group flex flex-col">
-                            <div className="h-56 overflow-hidden relative">
-                                <img src="https://images.unsplash.com/photo-1519167758481-83f550bb49b3?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80" alt="Reception Glasshouse" className="w-full h-full object-cover transform group-hover:scale-105 transition-transform duration-700" />
-                                <div className="absolute inset-0 bg-[#2A3B2E]/20"></div>
-                                <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-16 h-16 bg-white/90 backdrop-blur rounded-full flex items-center justify-center shadow-lg">
-                                <Music size={28} className="text-[#93A897]" />
-                                </div>
-                            </div>
-                            <div className="p-8 md:p-10 flex-grow">
-                                <h3 className="font-serif text-3xl text-[#2A3B2E] mb-2">The Reception</h3>
-                                <p className="uppercase tracking-widest text-[#D4A5A5] text-sm mb-8">Dinner & Dancing Under the Stars</p>
-                                <ul className="space-y-6">
-                                <li className="flex items-start text-[#5A6A5E]">
-                                    <Utensils className="w-6 h-6 mr-4 text-[#93A897] shrink-0" />
-                                    <div><strong className="block font-medium text-[#2A3B2E]">6:00 PM - Late</strong><span className="text-sm">Drinks at 4:30 PM, followed by Dinner & Dancing.</span></div>
-                                </li>
-                                <li className="flex items-start text-[#5A6A5E]">
-                                    <MapPin className="w-6 h-6 mr-4 text-[#93A897] shrink-0" />
-                                    <div><strong className="block font-medium text-[#2A3B2E]">The Estate Glasshouse</strong><span className="text-sm">A short walk from the ceremony lawn.</span></div>
-                                </li>
-                                </ul>
-                            </div>
-                            </div>
-                        </div>
-
-                        <div className="w-full h-[400px] rounded-3xl overflow-hidden shadow-lg border border-[#E8ECE6] mb-6 relative group">
-                            <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3187.585250953258!2d174.90731057639535!3d-37.01487227218659!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x6d0d4e76d33aeb69%3A0xf00ef62249cbb90!2sAuckland%20Botanic%20Gardens!5e0!3m2!1sen!2snz!4v1700000000000!5m2!1sen!2snz" width="100%" height="100%" style={{ border: 0 }} allowFullScreen="" loading="lazy" referrerPolicy="no-referrer-when-downgrade" title="Wedding Map" className="z-10 relative grayscale-[30%] contrast-75 hover:grayscale-0 hover:contrast-100 transition-all duration-700"></iframe>
-                        </div>
-
-                        <div className="flex flex-col sm:flex-row justify-center items-center gap-4 mb-16">
-                            <a href="https://maps.google.com/?q=Auckland+Botanic+Gardens,+102+Hill+Road,+Manurewa" target="_blank" rel="noopener noreferrer" className="flex items-center space-x-2 px-6 py-3 bg-white border border-[#EAD5D5] text-[#5A6A5E] rounded-full hover:bg-[#FDFCF8] hover:border-[#D4A5A5] transition-all shadow-sm w-full sm:w-auto justify-center group">
-                            <MapPin size={18} className="text-[#D4A5A5] group-hover:scale-110 transition-transform" />
-                            <span className="text-sm uppercase tracking-widest font-medium">Open in Google Maps</span>
-                            </a>
-                            <a href="https://waze.com/ul?q=Auckland+Botanic+Gardens,+102+Hill+Road" target="_blank" rel="noopener noreferrer" className="flex items-center space-x-2 px-6 py-3 bg-white border border-[#EAD5D5] text-[#5A6A5E] rounded-full hover:bg-[#FDFCF8] hover:border-[#93A897] transition-all shadow-sm w-full sm:w-auto justify-center group">
-                            <Navigation size={18} className="text-[#93A897] group-hover:scale-110 transition-transform" />
-                            <span className="text-sm uppercase tracking-widest font-medium">Open in Waze</span>
-                            </a>
-                        </div>
-                        
-                        <div className="bg-[#FDFCF8] p-8 md:p-14 rounded-3xl text-center border border-[#EAD5D5] shadow-lg shadow-[#EAD5D5]/20 max-w-5xl mx-auto">
-                            <h4 className="font-serif text-3xl md:text-4xl text-[#2A3B2E] mb-4">Suggested Attire: Spring Elegance</h4>
-                            <p className="text-[#6B7B6D] mb-10 text-lg max-w-2xl mx-auto">We kindly request our guests to dress in beautiful spring garden colors. Think soft pastels, vibrant floral prints, sage greens, and warm neutral tones. As the ceremony is on grass, we highly recommend block heels, wedges, or dressy flats.</p>
-                            
-                            <div className="flex flex-wrap justify-center gap-6 md:gap-12 mb-12">
-                            <div className="flex flex-col items-center"><div className="w-16 h-16 rounded-full bg-[#D4A5A5] shadow-inner mb-3 border-[3px] border-white ring-1 ring-[#EAD5D5]"></div><span className="text-xs uppercase tracking-widest text-[#7A8A7D]">Blush</span></div>
-                            <div className="flex flex-col items-center"><div className="w-16 h-16 rounded-full bg-[#93A897] shadow-inner mb-3 border-[3px] border-white ring-1 ring-[#E8ECE6]"></div><span className="text-xs uppercase tracking-widest text-[#7A8A7D]">Sage</span></div>
-                            <div className="flex flex-col items-center"><div className="w-16 h-16 rounded-full bg-[#B57D7D] shadow-inner mb-3 border-[3px] border-white ring-1 ring-[#F0EBEB]"></div><span className="text-xs uppercase tracking-widest text-[#7A8A7D]">Dusty Rose</span></div>
-                            <div className="flex flex-col items-center"><div className="w-16 h-16 rounded-full bg-[#DCE5DE] shadow-inner mb-3 border-[3px] border-white ring-1 ring-[#E8ECE6]"></div><span className="text-xs uppercase tracking-widest text-[#7A8A7D]">Mist</span></div>
-                            <div className="flex flex-col items-center"><div className="w-16 h-16 rounded-full bg-[#EADDCD] shadow-inner mb-3 border-[3px] border-white ring-1 ring-[#F0EBEB]"></div><span className="text-xs uppercase tracking-widest text-[#7A8A7D]">Soft Gold</span></div>
-                            </div>
-
-                            <div className="pt-10 border-t border-[#E8ECE6]">
-                            <p className="uppercase tracking-[0.2em] text-[#93A897] text-xs mb-8">Attire Inspiration</p>
-                            <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
-                                <div className="h-[300px] rounded-2xl overflow-hidden shadow-sm group relative">
-                                    <img src="https://images.unsplash.com/photo-1496747611176-843222e1e57c?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80" alt="Flowy Floral Dress" className="w-full h-full object-cover transform group-hover:scale-105 transition-transform duration-700" />
-                                    <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end justify-center pb-4"><span className="text-white text-sm font-medium tracking-wide">Floral & Flowy</span></div>
-                                </div>
-                                <div className="h-[300px] rounded-2xl overflow-hidden shadow-sm group relative">
-                                    <img src="https://images.unsplash.com/photo-1594938298596-70f56bf3ac59?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80" alt="Light Suit" className="w-full h-full object-cover transform group-hover:scale-105 transition-transform duration-700" />
-                                    <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end justify-center pb-4"><span className="text-white text-sm font-medium tracking-wide">Light Suits & Pastels</span></div>
-                                </div>
-                                <div className="h-[300px] rounded-2xl overflow-hidden shadow-sm group relative">
-                                    <img src="https://images.unsplash.com/photo-1566737236500-c8ac43014a67?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80" alt="Elegant Couple" className="w-full h-full object-cover transform group-hover:scale-105 transition-transform duration-700" />
-                                    <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end justify-center pb-4"><span className="text-white text-sm font-medium tracking-wide">Garden Elegance</span></div>
-                                </div>
-                            </div>
-                            </div>
-                        </div>
-                        </div>
-                    </section>
-
-                    <section id="gifts" className="py-24 px-4 bg-[#F6ECEC] relative">
-                        <div className="max-w-3xl mx-auto text-center">
-                        <div className="w-16 h-16 bg-white rounded-full flex items-center justify-center mx-auto mb-6 shadow-sm text-[#D4A5A5]">
-                            <Gift size={28} />
-                        </div>
-                        <p className="uppercase tracking-[0.2em] text-[#93A897] text-sm mb-4">Registry</p>
-                        <h2 className="font-serif text-4xl md:text-5xl text-[#2A3B2E] mb-8">Gifts & Wishes</h2>
-                        
-                        <div className="bg-white p-8 md:p-12 rounded-3xl shadow-sm border border-[#EAD5D5]">
-                            <p className="text-[#5A6A5E] leading-relaxed mb-8 text-lg">Your presence at our wedding is the greatest gift of all. We are simply overjoyed to celebrate this special day with you. <br/><br/>If you wish to bless us with a gift, we will graciously accept anything you choose to give. However, as we are currently saving for our future together, if you were considering bulky items or appliances, a monetary contribution would be deeply appreciated to help us build our dream home.</p>
-
-                            <div className="bg-[#FDFCF8] p-6 rounded-2xl border border-[#E8ECE6] inline-block w-full max-w-md text-left">
-                            <h4 className="font-serif text-xl text-[#2A3B2E] mb-4 text-center border-b border-[#E8ECE6] pb-3">Bank Details</h4>
-                            <div className="space-y-3 text-sm md:text-base text-[#5A6A5E]">
-                                <div className="flex justify-between"><span className="font-medium text-[#2A3B2E]">Bank:</span><span>Spring Garden Bank</span></div>
-                                <div className="flex justify-between"><span className="font-medium text-[#2A3B2E]">Name:</span><span>Allen & Marry</span></div>
-                                <div className="flex justify-between items-center mt-2 pt-2 border-t border-[#F0EBEB]">
-                                <span className="font-medium text-[#2A3B2E]">Account:</span>
-                                <div className="flex items-center space-x-2 bg-white px-3 py-1.5 rounded-lg border border-[#E8ECE6]">
-                                    <span className="font-mono text-[#93A897]">12-3456-7890123-00</span>
-                                    <button onClick={() => copyToClipboard('12-3456-7890123-00')} className="text-[#D4A5A5] hover:text-[#C28D8D] focus:outline-none p-1 transition-colors" title="Copy to clipboard">
-                                    {copied ? <Check size={16} /> : <Copy size={16} />}
-                                    </button>
-                                </div>
-                                </div>
-                                {copied && <p className="text-xs text-center text-[#93A897] mt-2 animate-fade-in">Account number copied!</p>}
-                            </div>
-                            </div>
-                        </div>
-                        </div>
-                    </section>
-
-                    <section id="rsvp" className="py-32 px-4 relative bg-[#2A3B2E] text-white overflow-hidden">
-                        <Flower2 className="absolute top-[-5%] right-[-5%] text-white/5" size={400} strokeWidth={0.5} />
-                        <Leaf className="absolute bottom-[-10%] left-[-5%] text-white/5" size={300} strokeWidth={0.5} />
-                        
-                        <div className="max-w-3xl mx-auto relative z-10">
-                        <div className="text-center mb-16">
-                            <p className="uppercase tracking-[0.2em] text-[#93A897] text-sm mb-4">Kindly Reply</p>
-                            <h2 className="font-serif text-5xl md:text-6xl text-[#FDFCF8] mb-6">Will You Join Us?</h2>
-                            <p className="text-[#DCE5DE] text-lg">Please let us know by August 1st, 2026</p>
-                        </div>
-
-                        <div className="bg-white/5 backdrop-blur-xl border border-white/10 p-8 md:p-12 rounded-3xl shadow-2xl">
-                            {rsvpStatus === 'submitted' ? (
-                            <div className="text-center py-16 animate-fade-in">
-                                <div className="w-24 h-24 bg-[#D4A5A5] rounded-full flex items-center justify-center mx-auto mb-8 shadow-lg transform scale-110">
-                                <CheckCircle size={48} className="text-white" />
-                                </div>
-                                <h3 className="font-serif text-4xl text-[#FDFCF8] mb-4">Thank You!</h3>
-                                <p className="text-[#DCE5DE] text-lg mb-8">We have received your response. We can't wait to celebrate under the sun with you!</p>
-                                <button onClick={() => setRsvpStatus('pending')} className="text-sm uppercase tracking-[0.2em] text-[#93A897] border-b border-[#93A897] pb-1 hover:text-white hover:border-white transition-colors">Update Response</button>
-                            </div>
-                            ) : (
-                            <form onSubmit={handleRsvpSubmit} className="space-y-8 animate-fade-in">
-                                {rsvpError && <div className="bg-red-500/20 border border-red-500/50 text-white p-4 rounded-xl text-center">{rsvpError}</div>}
-                                
-                                <div className="grid md:grid-cols-2 gap-8">
-                                <div><label className="block text-xs uppercase tracking-[0.2em] text-[#93A897] mb-3">First Name</label><input type="text" name="firstName" required value={formData.firstName} onChange={handleInputChange} className="w-full bg-transparent border-b-2 border-white/20 pb-3 text-lg text-white focus:outline-none focus:border-[#D4A5A5] transition-colors placeholder-white/30" placeholder="Jane" /></div>
-                                <div><label className="block text-xs uppercase tracking-[0.2em] text-[#93A897] mb-3">Last Name</label><input type="text" name="lastName" required value={formData.lastName} onChange={handleInputChange} className="w-full bg-transparent border-b-2 border-white/20 pb-3 text-lg text-white focus:outline-none focus:border-[#D4A5A5] transition-colors placeholder-white/30" placeholder="Doe" /></div>
-                                </div>
-
-                                <div><label className="block text-xs uppercase tracking-[0.2em] text-[#93A897] mb-3">Email Address</label><input type="email" name="email" required value={formData.email} onChange={handleInputChange} className="w-full bg-transparent border-b-2 border-white/20 pb-3 text-lg text-white focus:outline-none focus:border-[#D4A5A5] transition-colors placeholder-white/30" placeholder="jane.doe@example.com" /></div>
-
-                                <div className="pt-4">
-                                <label className="block text-xs uppercase tracking-[0.2em] text-[#93A897] mb-6">Will you be attending?</label>
-                                <div className="flex flex-col sm:flex-row space-y-4 sm:space-y-0 sm:space-x-8">
-                                    <label className="flex items-center space-x-4 cursor-pointer group">
-                                    <div className={`w-6 h-6 rounded-full border-2 flex items-center justify-center transition-colors ${formData.attending === 'yes' ? 'border-[#D4A5A5] bg-[#D4A5A5]' : 'border-white/40 group-hover:border-white/80'}`}>
-                                        {formData.attending === 'yes' && <div className="w-2.5 h-2.5 bg-white rounded-full"></div>}
-                                    </div>
-                                    <input type="radio" name="attending" value="yes" checked={formData.attending === 'yes'} onChange={handleInputChange} className="hidden" />
-                                    <span className="text-lg text-[#FDFCF8]">Joyfully Accept</span>
-                                    </label>
-                                    
-                                    <label className="flex items-center space-x-4 cursor-pointer group">
-                                    <div className={`w-6 h-6 rounded-full border-2 flex items-center justify-center transition-colors ${formData.attending === 'no' ? 'border-[#D4A5A5] bg-[#D4A5A5]' : 'border-white/40 group-hover:border-white/80'}`}>
-                                        {formData.attending === 'no' && <div className="w-2.5 h-2.5 bg-white rounded-full"></div>}
-                                    </div>
-                                    <input type="radio" name="attending" value="no" checked={formData.attending === 'no'} onChange={handleInputChange} className="hidden" />
-                                    <span className="text-lg text-[#FDFCF8]">Regretfully Decline</span>
-                                    </label>
-                                </div>
-                                </div>
-
-                                {formData.attending === 'yes' && (
-                                <div className="space-y-8 animate-fade-in pt-4 border-t border-white/10">
-                                    <div><label className="block text-xs uppercase tracking-[0.2em] text-[#93A897] mb-3">Number of Guests</label>
-                                    <select name="guestCount" value={formData.guestCount} onChange={handleInputChange} className="w-full bg-transparent border-b-2 border-white/20 pb-3 text-lg text-white focus:outline-none focus:border-[#D4A5A5] transition-colors appearance-none cursor-pointer" style={{ backgroundImage: `url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e")`, backgroundRepeat: 'no-repeat', backgroundPosition: 'right 0.5rem center', backgroundSize: '1.5em 1.5em' }}>
-                                        {[1, 2, 3, 4, 5].map(num => (<option key={num} value={num} className="bg-[#2A3B2E] text-white">{num}</option>))}
-                                    </select></div>
-                                    <div><label className="block text-xs uppercase tracking-[0.2em] text-[#93A897] mb-3">Dietary Requirements</label><input type="text" name="dietary" value={formData.dietary} onChange={handleInputChange} className="w-full bg-transparent border-b-2 border-white/20 pb-3 text-lg text-white focus:outline-none focus:border-[#D4A5A5] transition-colors placeholder-white/30" placeholder="e.g., Vegetarian, Peanut allergy, None" /></div>
-                                    <div><label className="block text-xs uppercase tracking-[0.2em] text-[#93A897] mb-3">Song Request</label><input type="text" name="songRequest" value={formData.songRequest} onChange={handleInputChange} className="w-full bg-transparent border-b-2 border-white/20 pb-3 text-lg text-white focus:outline-none focus:border-[#D4A5A5] transition-colors placeholder-white/30" placeholder="What song will get you on the dance floor?" /></div>
-                                </div>
-                                )}
-
-                                <button type="submit" disabled={isSubmitting} className={`w-full mt-10 py-5 bg-[#D4A5A5] text-white rounded-xl uppercase tracking-[0.2em] text-sm transition-all flex items-center justify-center space-x-3 shadow-xl ${isSubmitting ? 'opacity-80 cursor-not-allowed' : 'hover:bg-[#C28D8D] transform hover:-translate-y-1'}`}>
-                                {isSubmitting ? (<><Loader2 size={18} className="animate-spin" /><span>Sending...</span></>) : (<><span>Send RSVP</span><Send size={18} /></>)}
-                                </button>
-                            </form>
-                            )}
-                        </div>
-                        </div>
-                    </section>
-
-                    <footer className="py-16 text-center bg-[#1F2B22] text-[#93A897]">
-                        <Flower2 size={32} className="mx-auto mb-6 text-[#D4A5A5] opacity-80" strokeWidth={1} />
-                        <h2 className="font-serif text-4xl text-[#FDFCF8] mb-6">A & M</h2>
-                        <p className="text-sm tracking-[0.3em] uppercase mb-2">We can't wait to celebrate with you</p>
-                        <p className="text-xs opacity-60 mt-8">Made with Love &bull; 2026</p>
-                    </footer>
-
-                    <style dangerouslySetInnerHTML={{__html: `
-                        @keyframes fadeIn { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
-                        @keyframes blob { 0% { transform: translate(0px, 0px) scale(1); } 33% { transform: translate(30px, -50px) scale(1.1); } 66% { transform: translate(-20px, 20px) scale(0.9); } 100% { transform: translate(0px, 0px) scale(1); } }
-                        .animate-fade-in { animation: fadeIn 1s cubic-bezier(0.4, 0, 0.2, 1) forwards; }
-                        .animate-blob { animation: blob 15s infinite alternate; }
-                        .animation-delay-500 { animation-delay: 500ms; }
-                        .animation-delay-1000 { animation-delay: 1000ms; }
-                        .animation-delay-2000 { animation-delay: 2000ms; }
-                        .rotate-x-180 { transform: rotateX(180deg); }
-                    `}} />
-                </div>
-            );
         }
 
-        // Render the app
-        const root = ReactDOM.createRoot(document.getElementById('root'));
-        root.render(<WeddingInvitation />);
+        // Attach listeners to file inputs
+        ['heroImage', 'ceremonyImage', 'receptionImage', 'gallery1', 'gallery2', 'gallery3', 'attire1', 'attire2', 'attire3'].forEach(id => {
+            const el = document.getElementById(id);
+            if (el) el.addEventListener('change', (e) => handleFile(e, id));
+        });
+
+        // Form submission & JSON generation
+        document.getElementById('configForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const config = {
+                names: {
+                    groom: document.getElementById('groomName').value,
+                    bride: document.getElementById('brideName').value
+                },
+                date: document.getElementById('weddingDate').value,
+                rsvpEmail: document.getElementById('rsvpEmail').value,
+                location: {
+                    ceremony: {
+                        time: document.getElementById('ceremonyTime').value,
+                        name: document.getElementById('ceremonyName').value,
+                        address: document.getElementById('ceremonyAddress').value
+                    },
+                    reception: {
+                        time: document.getElementById('receptionTime').value,
+                        name: document.getElementById('receptionName').value,
+                        address: document.getElementById('receptionAddress').value
+                    },
+                    mapUrl: document.getElementById('mapUrl').value
+                },
+                registry: {
+                    bankName: document.getElementById('bankName').value,
+                    accountName: document.getElementById('accountName').value,
+                    accountNumber: document.getElementById('accountNumber').value
+                },
+                story: [
+                    {
+                        date: document.getElementById('story1Date').value,
+                        title: document.getElementById('story1Title').value,
+                        text: document.getElementById('story1Text').value
+                    },
+                    {
+                        date: document.getElementById('story2Date').value,
+                        title: document.getElementById('story2Title').value,
+                        text: document.getElementById('story2Text').value
+                    }
+                ],
+                images: {
+                    hero: imageBase64.heroImage,
+                    events: {
+                        ceremony: imageBase64.ceremonyImage,
+                        reception: imageBase64.receptionImage
+                    },
+                    gallery: [
+                        imageBase64.gallery1,
+                        imageBase64.gallery2,
+                        imageBase64.gallery3
+                    ],
+                    attire: [
+                        imageBase64.attire1,
+                        imageBase64.attire2,
+                        imageBase64.attire3
+                    ]
+                }
+            };
+
+            const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(config, null, 2));
+            const downloadAnchorNode = document.createElement('a');
+            downloadAnchorNode.setAttribute("href", dataStr);
+            downloadAnchorNode.setAttribute("download", "config.json");
+            document.body.appendChild(downloadAnchorNode); 
+            downloadAnchorNode.click();
+            downloadAnchorNode.remove();
+        });
     </script>
 </body>
 </html>
