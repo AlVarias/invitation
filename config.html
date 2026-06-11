@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Wedding App Configurator</title>
+    <style>
+        body { font-family: system-ui, sans-serif; background: #FDFCF8; color: #2A3B2E; max-width: 900px; margin: 0 auto; padding: 2rem; }
+        .card { background: white; padding: 2rem; border-radius: 1rem; box-shadow: 0 4px 6px rgba(0,0,0,0.05); border: 1px solid #EAD5D5; margin-bottom: 2rem; }
+        .form-grid { display: grid; grid-template-columns: 1fr; gap: 1.5rem; }
+        @media (min-width: 768px) { .form-grid { grid-template-columns: 1fr 1fr; } }
+        .full-width { grid-column: 1 / -1; }
+        .form-group { margin-bottom: 0; }
+        label { display: block; font-size: 0.875rem; font-weight: bold; text-transform: uppercase; letter-spacing: 0.1em; color: #93A897; margin-bottom: 0.5rem; }
+        input[type="text"], input[type="date"], input[type="url"], input[type="file"], textarea { width: 100%; padding: 0.75rem; border: 1px solid #E8ECE6; border-radius: 0.5rem; box-sizing: border-box; font-family: inherit; }
+        textarea { resize: vertical; min-height: 80px; }
+        .note { font-size: 0.8rem; color: #6B7B6D; margin-top: 0.25rem; }
+        h1 { font-family: serif; font-size: 2.5rem; text-align: center; margin-bottom: 2rem; }
+        h2 { font-family: serif; font-size: 1.5rem; color: #D4A5A5; margin-top: 0; margin-bottom: 1.5rem; border-bottom: 1px solid #E8ECE6; padding-bottom: 0.5rem; }
+        button { background: #D4A5A5; color: white; border: none; padding: 1rem 2rem; font-size: 1.125rem; text-transform: uppercase; letter-spacing: 0.1em; border-radius: 0.5rem; cursor: pointer; width: 100%; transition: background 0.3s; font-weight: bold; margin-bottom: 4rem; }
+        button:hover { background: #C28D8D; }
+    </style>
+</head>
+<body>
+
+    <h1>Invitation Configurator</h1>
+
+    <form id="configForm">
+        <!-- Basic Information -->
+        <div class="card">
+            <h2>Basic Details</h2>
+            <div class="form-grid">
+                <div class="form-group">
+                    <label>Groom's Name</label>
+                    <input type="text" id="groomName" value="Allen" required>
+                </div>
+                <div class="form-group">
+                    <label>Bride's Name</label>
+                    <input type="text" id="brideName" value="Marry" required>
+                </div>
+                <div class="form-group">
+                    <label>Wedding Date</label>
+                    <input type="date" id="weddingDate" value="2026-09-08" required>
+                </div>
+                <div class="form-group">
+                    <label>RSVP Email Address</label>
+                    <input type="text" id="rsvpEmail" value="allenvarias@gmail.com" required>
+                </div>
+            </div>
+        </div>
+
+        <!-- Locations -->
+        <div class="card">
+            <h2>Locations & Times</h2>
+            <div class="form-grid">
+                <div class="form-group">
+                    <label>Ceremony Time</label>
+                    <input type="text" id="ceremonyTime" value="3:00 PM Sharp" required>
+                </div>
+                <div class="form-group">
+                    <label>Ceremony Location Name</label>
+                    <input type="text" id="ceremonyName" value="Auckland Botanic Gardens" required>
+                </div>
+                <div class="form-group full-width">
+                    <label>Ceremony Address</label>
+                    <input type="text" id="ceremonyAddress" value="102 Hill Road, Manurewa, Auckland" required>
+                </div>
+
+                <div class="form-group mt-4">
+                    <label>Reception Time</label>
+                    <input type="text" id="receptionTime" value="6:00 PM - Late" required>
+                </div>
+                <div class="form-group mt-4">
+                    <label>Reception Location Name</label>
+                    <input type="text" id="receptionName" value="The Estate Glasshouse" required>
+                </div>
+                <div class="form-group full-width">
+                    <label>Reception Address (or Note)</label>
+                    <input type="text" id="receptionAddress" value="A short walk from the ceremony lawn." required>
+                </div>
+
+                <div class="form-group full-width mt-4">
+                    <label>Google Maps Embed URL</label>
+                    <input type="text" id="mapUrl" value="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3187.585250953258!2d174.90731057639535!3d-37.01487227218659!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x6d0d4e76d33aeb69%3A0xf00ef62249cbb90!2sAuckland%20Botanic%20Gardens!5e0!3m2!1sen!2snz!4v1700000000000!5m2!1sen!2snz" required>
+                    <p class="note">Go to Google Maps -> Share -> Embed a Map -> Copy the "src" URL.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Our Story -->
+        <div class="card">
+            <h2>Our Story</h2>
+            <div class="form-grid">
+                <div class="form-group">
+                    <label>Story 1: Date</label>
+                    <input type="text" id="story1Date" value="October 2022" required>
+                </div>
+                <div class="form-group">
+                    <label>Story 1: Title</label>
+                    <input type="text" id="story1Title" value="The First Meeting" required>
+                </div>
+                <div class="form-group full-width">
+                    <label>Story 1: Details</label>
+                    <textarea id="story1Text" required>We bumped into each other at a mutual friend's garden party. A spilled drink and a laugh later, we couldn't stop talking.</textarea>
+                </div>
+
+                <div class="form-group mt-4">
+                    <label>Story 2: Date</label>
+                    <input type="text" id="story2Date" value="August 2025" required>
+                </div>
+                <div class="form-group mt-4">
+                    <label>Story 2: Title</label>
+                    <input type="text" id="story2Title" value="The Proposal" required>
+                </div>
+                <div class="form-group full-width">
+                    <label>Story 2: Details</label>
+                    <textarea id="story2Text" required>During a quiet morning walk through a field of spring wildflowers, Allen finally popped the question.</textarea>
+                </div>
+            </div>
+        </div>
+
+        <!-- Image Uploads / Links -->
+        <div class="card">
+            <h2>Photos & Imagery</h2>
+            <p class="note mb-4" style="margin-bottom: 1.5rem;">Upload your photos below. They will be embedded directly into the config file so they appear instantly in your app! (If left empty, placeholder images will be used).</p>
+            
+            <div class="form-grid">
+                <div class="form-group full-width">
+                    <label>Hero Background Image</label>
+                    <input type="file" id="heroImage" accept="image/*">
+                </div>
+
+                <div class="form-group">
+                    <label>Ceremony Image</label>
+                    <input type="file" id="ceremonyImage" accept="image/*">
+                </div>
+                <div class="form-group">
+                    <label>Reception Image</label>
+                    <input type="file" id="receptionImage" accept="image/*">
+                </div>
+
+                <!-- Gallery Images -->
+                <div class="form-group mt-4">
+                    <label>Gallery Image 1</label>
+                    <input type="file" id="gallery1" accept="image/*">
+                </div>
+                <div class="form-group mt-4">
+                    <label>Gallery Image 2</label>
+                    <input type="file" id="gallery2" accept="image/*">
+                </div>
+                <div class="form-group mt-4">
+                    <label>Gallery Image 3</label>
+                    <input type="file" id="gallery3" accept="image/*">
+                </div>
+
+                <!-- Attire Inspiration -->
+                <div class="form-group mt-4">
+                    <label>Attire Inspiration 1</label>
+                    <input type="file" id="attire1" accept="image/*">
+                </div>
+                <div class="form-group mt-4">
+                    <label>Attire Inspiration 2</label>
+                    <input type="file" id="attire2" accept="image/*">
+                </div>
+                <div class="form-group mt-4">
+                    <label>Attire Inspiration 3</label>
+                    <input type="file" id="attire3" accept="image/*">
+                </div>
+            </div>
+        </div>
+
+        <button type="submit">Download config.json</button>
+    </form>
+
+    <script>
+        const imageBase64 = {
+            heroImage: "https://images.unsplash.com/photo-1519225421980-715cb02151ff?ixlib=rb-4.0.3&auto=format&fit=crop&w=2070&q=80",
+            ceremonyImage: "https://images.unsplash.com/photo-1469334031218-e382a71b716b?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80",
+            receptionImage: "https://images.unsplash.com/photo-1519167758481-83f550bb49b3?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80",
+            gallery1: "https://images.unsplash.com/photo-1606800052052-a08af7148866?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
+            gallery2: "https://images.unsplash.com/photo-1583939003579-730e3918a45a?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
+            gallery3: "https://images.unsplash.com/photo-1520854221256-17451cc331bf?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
+            attire1: "https://images.unsplash.com/photo-1496747611176-843222e1e57c?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80",
+            attire2: "https://images.unsplash.com/photo-1594938298596-70f56bf3ac59?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80",
+            attire3: "https://images.unsplash.com/photo-1566737236500-c8ac43014a67?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80"
+        };
+
+        function handleFile(event, key) {
+            const file = event.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    imageBase64[key] = e.target.result;
+                };
+                reader.readAsDataURL(file);
+            }
+        }
+
+        ['heroImage', 'ceremonyImage', 'receptionImage', 'gallery1', 'gallery2', 'gallery3', 'attire1', 'attire2', 'attire3'].forEach(id => {
+            const el = document.getElementById(id);
+            if (el) el.addEventListener('change', (e) => handleFile(e, id));
+        });
+
+        document.getElementById('configForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const config = {
+                names: {
+                    groom: document.getElementById('groomName').value,
+                    bride: document.getElementById('brideName').value
+                },
+                date: document.getElementById('weddingDate').value,
+                rsvpEmail: document.getElementById('rsvpEmail').value,
+                location: {
+                    ceremony: {
+                        time: document.getElementById('ceremonyTime').value,
+                        name: document.getElementById('ceremonyName').value,
+                        address: document.getElementById('ceremonyAddress').value
+                    },
+                    reception: {
+                        time: document.getElementById('receptionTime').value,
+                        name: document.getElementById('receptionName').value,
+                        address: document.getElementById('receptionAddress').value
+                    },
+                    mapUrl: document.getElementById('mapUrl').value
+                },
+                story: [
+                    {
+                        date: document.getElementById('story1Date').value,
+                        title: document.getElementById('story1Title').value,
+                        text: document.getElementById('story1Text').value
+                    },
+                    {
+                        date: document.getElementById('story2Date').value,
+                        title: document.getElementById('story2Title').value,
+                        text: document.getElementById('story2Text').value
+                    }
+                ],
+                images: {
+                    hero: imageBase64.heroImage,
+                    events: {
+                        ceremony: imageBase64.ceremonyImage,
+                        reception: imageBase64.receptionImage
+                    },
+                    gallery: [
+                        imageBase64.gallery1,
+                        imageBase64.gallery2,
+                        imageBase64.gallery3
+                    ],
+                    attire: [
+                        imageBase64.attire1,
+                        imageBase64.attire2,
+                        imageBase64.attire3
+                    ]
+                }
+            };
+
+            const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(config, null, 2));
+            const downloadAnchorNode = document.createElement('a');
+            downloadAnchorNode.setAttribute("href", dataStr);
+            downloadAnchorNode.setAttribute("download", "config.json");
+            document.body.appendChild(downloadAnchorNode); // required for firefox
+            downloadAnchorNode.click();
+            downloadAnchorNode.remove();
+        });
+    </script>
+</body>
+</html>
