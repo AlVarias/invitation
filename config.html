@@ -173,6 +173,7 @@
     </form>
 
     <script>
+        // Default placeholder images
         const imageBase64 = {
             heroImage: "https://images.unsplash.com/photo-1519225421980-715cb02151ff?ixlib=rb-4.0.3&auto=format&fit=crop&w=2070&q=80",
             ceremonyImage: "https://images.unsplash.com/photo-1469334031218-e382a71b716b?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80",
@@ -185,6 +186,7 @@
             attire3: "https://images.unsplash.com/photo-1566737236500-c8ac43014a67?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80"
         };
 
+        // File upload handler
         function handleFile(event, key) {
             const file = event.target.files[0];
             if (file) {
@@ -196,11 +198,13 @@
             }
         }
 
+        // Attach listeners to file inputs
         ['heroImage', 'ceremonyImage', 'receptionImage', 'gallery1', 'gallery2', 'gallery3', 'attire1', 'attire2', 'attire3'].forEach(id => {
             const el = document.getElementById(id);
             if (el) el.addEventListener('change', (e) => handleFile(e, id));
         });
 
+        // Form submission & JSON generation
         document.getElementById('configForm').addEventListener('submit', function(e) {
             e.preventDefault();
             
@@ -259,7 +263,7 @@
             const downloadAnchorNode = document.createElement('a');
             downloadAnchorNode.setAttribute("href", dataStr);
             downloadAnchorNode.setAttribute("download", "config.json");
-            document.body.appendChild(downloadAnchorNode); // required for firefox
+            document.body.appendChild(downloadAnchorNode); 
             downloadAnchorNode.click();
             downloadAnchorNode.remove();
         });
