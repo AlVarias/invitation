@@ -70,7 +70,7 @@
                     })
                     .catch(error => {
                         console.log("Using default fallback data because config.json wasn't found.");
-                        // ROBUST FALLBACK: Guarantees the app renders even if config.json is missing on GitHub
+                        // ROBUST FALLBACK: Guarantees the app renders even if config.json is missing
                         setConfig({
                             names: { groom: "Allen", bride: "Marry" },
                             date: "2026-09-08",
@@ -201,7 +201,7 @@
                                         </h2>
                                         <div className="w-12 h-[1px] bg-[#D4A5A5] mb-4"></div>
                                         <p className="text-[#93A897] uppercase tracking-widest text-[9px] text-center leading-relaxed">
-                                            8 September 2026<br/>New Zealand
+                                            8 Sept 2026<br/>New Zealand
                                         </p>
                                         </div>
                                     </div>
@@ -232,7 +232,7 @@
                     <nav className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ${isScrolled ? 'bg-white/95 backdrop-blur-md shadow-sm py-4' : 'bg-transparent py-6'}`}>
                         <div className="max-w-5xl mx-auto px-4 flex justify-center items-center space-x-6 md:space-x-12 text-xs md:text-sm uppercase tracking-[0.1em] md:tracking-[0.2em] text-[#7A8A7D] font-medium">
                         <button onClick={() => scrollTo('home')} className="hover:text-[#D4A5A5] transition-colors">Home</button>
-                        <button onClick={() => scrollTo('gallery')} className="hover:text-[#D4A5A5] transition-colors">Gallery</button>
+                        <button onClick={() => scrollTo('gallery')} className="hover:text-[#D4A5A5] transition-colors">Story</button>
                         <button onClick={() => scrollTo('details')} className="hover:text-[#D4A5A5] transition-colors">Details</button>
                         </div>
                     </nav>
