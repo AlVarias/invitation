@@ -38,13 +38,9 @@
                     <label>Bride's Name</label>
                     <input type="text" id="brideName" value="Marry" required>
                 </div>
-                <div class="form-group">
+                <div class="form-group full-width">
                     <label>Wedding Date</label>
                     <input type="date" id="weddingDate" value="2026-09-08" required>
-                </div>
-                <div class="form-group">
-                    <label>RSVP Email Address</label>
-                    <input type="text" id="rsvpEmail" value="allenvarias@gmail.com" required>
                 </div>
             </div>
         </div>
@@ -59,11 +55,11 @@
                 </div>
                 <div class="form-group">
                     <label>Ceremony Location Name</label>
-                    <input type="text" id="ceremonyName" value="Auckland Botanic Gardens" required>
+                    <input type="text" id="ceremonyName" value="The Stable Cottage" required>
                 </div>
                 <div class="form-group full-width">
                     <label>Ceremony Address</label>
-                    <input type="text" id="ceremonyAddress" value="102 Hill Road, Manurewa, Auckland" required>
+                    <input type="text" id="ceremonyAddress" value="North West Auckland" required>
                 </div>
 
                 <div class="form-group mt-4">
@@ -72,7 +68,7 @@
                 </div>
                 <div class="form-group mt-4">
                     <label>Reception Location Name</label>
-                    <input type="text" id="receptionName" value="The Estate Glasshouse" required>
+                    <input type="text" id="receptionName" value="The Stable Cottage" required>
                 </div>
                 <div class="form-group full-width">
                     <label>Reception Address (or Note)</label>
@@ -87,61 +83,70 @@
             </div>
         </div>
 
-        <!-- Registry & Bank Details -->
-        <div class="card">
-            <h2>Registry & Bank Details</h2>
-            <div class="form-grid">
-                <div class="form-group">
-                    <label>Bank Name</label>
-                    <input type="text" id="bankName" value="Spring Garden Bank" required>
-                </div>
-                <div class="form-group">
-                    <label>Account Name</label>
-                    <input type="text" id="accountName" value="Allen & Marry" required>
-                </div>
-                <div class="form-group full-width">
-                    <label>Account Number</label>
-                    <input type="text" id="accountNumber" value="12-3456-7890123-00" required>
-                </div>
-            </div>
-        </div>
-
         <!-- Our Story -->
         <div class="card">
             <h2>Our Story</h2>
             <div class="form-grid">
+                <!-- Story 1 -->
                 <div class="form-group">
                     <label>Story 1: Date</label>
-                    <input type="text" id="story1Date" value="October 2022" required>
+                    <input type="text" id="story1Date" value="February 2020" required>
                 </div>
                 <div class="form-group">
                     <label>Story 1: Title</label>
-                    <input type="text" id="story1Title" value="The First Meeting" required>
+                    <input type="text" id="story1Title" value="The First Chat" required>
                 </div>
                 <div class="form-group full-width">
                     <label>Story 1: Details</label>
-                    <textarea id="story1Text" required>We bumped into each other at a mutual friend's garden party. A spilled drink and a laugh later, we couldn't stop talking.</textarea>
+                    <textarea id="story1Text" required>We started talking online and getting to know each other.</textarea>
+                </div>
+                <div class="form-group full-width mb-8">
+                    <label>Story 1: Photo</label>
+                    <input type="file" id="gallery1" accept="image/*">
                 </div>
 
-                <div class="form-group mt-4">
+                <!-- Story 2 -->
+                <div class="form-group border-t border-[#E8ECE6] pt-8">
                     <label>Story 2: Date</label>
-                    <input type="text" id="story2Date" value="August 2025" required>
+                    <input type="text" id="story2Date" value="July 2020" required>
                 </div>
-                <div class="form-group mt-4">
+                <div class="form-group border-t border-[#E8ECE6] pt-8">
                     <label>Story 2: Title</label>
-                    <input type="text" id="story2Title" value="The Proposal" required>
+                    <input type="text" id="story2Title" value="The First Meeting" required>
                 </div>
                 <div class="form-group full-width">
                     <label>Story 2: Details</label>
-                    <textarea id="story2Text" required>During a quiet morning walk through a field of spring wildflowers, Allen finally popped the question.</textarea>
+                    <textarea id="story2Text" required>We finally met in person with her family. It was during COVID times and she needed a ride back home.</textarea>
+                </div>
+                <div class="form-group full-width mb-8">
+                    <label>Story 2: Photo</label>
+                    <input type="file" id="gallery2" accept="image/*">
+                </div>
+
+                <!-- Story 3 -->
+                <div class="form-group border-t border-[#E8ECE6] pt-8">
+                    <label>Story 3: Date</label>
+                    <input type="text" id="story3Date" value="April 2026" required>
+                </div>
+                <div class="form-group border-t border-[#E8ECE6] pt-8">
+                    <label>Story 3: Title</label>
+                    <input type="text" id="story3Title" value="The Proposal" required>
+                </div>
+                <div class="form-group full-width">
+                    <label>Story 3: Details</label>
+                    <textarea id="story3Text" required>Allen finally popped the question during a beautiful trip to Lake Tekapo.</textarea>
+                </div>
+                <div class="form-group full-width">
+                    <label>Story 3: Photo</label>
+                    <input type="file" id="gallery3" accept="image/*">
                 </div>
             </div>
         </div>
 
-        <!-- Image Uploads / Links -->
+        <!-- Image Uploads -->
         <div class="card">
-            <h2>Photos & Imagery</h2>
-            <p class="note mb-4" style="margin-bottom: 1.5rem;">Upload your photos below. They will be embedded directly into the config file so they appear instantly in your app! (If left empty, placeholder images will be used).</p>
+            <h2>Additional Imagery</h2>
+            <p class="note mb-4" style="margin-bottom: 1.5rem;">Upload the rest of your photos below.</p>
             
             <div class="form-grid">
                 <div class="form-group full-width">
@@ -158,30 +163,16 @@
                     <input type="file" id="receptionImage" accept="image/*">
                 </div>
 
-                <!-- Gallery Images -->
-                <div class="form-group mt-4">
-                    <label>Gallery Image 1</label>
-                    <input type="file" id="gallery1" accept="image/*">
-                </div>
-                <div class="form-group mt-4">
-                    <label>Gallery Image 2</label>
-                    <input type="file" id="gallery2" accept="image/*">
-                </div>
-                <div class="form-group mt-4">
-                    <label>Gallery Image 3</label>
-                    <input type="file" id="gallery3" accept="image/*">
-                </div>
-
                 <!-- Attire Inspiration -->
-                <div class="form-group mt-4">
+                <div class="form-group mt-4 border-t border-[#E8ECE6] pt-8">
                     <label>Attire Inspiration 1</label>
                     <input type="file" id="attire1" accept="image/*">
                 </div>
-                <div class="form-group mt-4">
+                <div class="form-group mt-4 border-t border-[#E8ECE6] pt-8">
                     <label>Attire Inspiration 2</label>
                     <input type="file" id="attire2" accept="image/*">
                 </div>
-                <div class="form-group mt-4">
+                <div class="form-group mt-4 border-t border-[#E8ECE6] pt-8">
                     <label>Attire Inspiration 3</label>
                     <input type="file" id="attire3" accept="image/*">
                 </div>
@@ -233,7 +224,6 @@
                     bride: document.getElementById('brideName').value
                 },
                 date: document.getElementById('weddingDate').value,
-                rsvpEmail: document.getElementById('rsvpEmail').value,
                 location: {
                     ceremony: {
                         time: document.getElementById('ceremonyTime').value,
@@ -247,11 +237,6 @@
                     },
                     mapUrl: document.getElementById('mapUrl').value
                 },
-                registry: {
-                    bankName: document.getElementById('bankName').value,
-                    accountName: document.getElementById('accountName').value,
-                    accountNumber: document.getElementById('accountNumber').value
-                },
                 story: [
                     {
                         date: document.getElementById('story1Date').value,
@@ -262,6 +247,11 @@
                         date: document.getElementById('story2Date').value,
                         title: document.getElementById('story2Title').value,
                         text: document.getElementById('story2Text').value
+                    },
+                    {
+                        date: document.getElementById('story3Date').value,
+                        title: document.getElementById('story3Title').value,
+                        text: document.getElementById('story3Text').value
                     }
                 ],
                 images: {
