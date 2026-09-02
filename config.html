@@ -59,18 +59,24 @@
             <h2>The Venue</h2>
             <div class="form-grid">
                 <div class="form-group">
-                    <label>Venue Name</label>
-                    <input type="text" id="venueName" value="The Stable Cottage" required>
+                    <label>Ceremony Time</label>
+                    <input type="text" id="ceremonyTime" value="3:00 PM Sharp" required>
                 </div>
                 <div class="form-group">
-                    <label>Venue Region</label>
-                    <input type="text" id="venueRegion" value="North West Auckland" required>
+                    <label>Venue Name</label>
+                    <input type="text" id="venueName" value="The Stable Cottage" required>
                 </div>
                 <div class="form-group full-width">
                     <label>Exact Address</label>
                     <input type="text" id="venueAddress" value="720 Peak Road, Helensville" required>
                 </div>
-                <div class="form-group full-width">
+
+                <div class="form-group mt-4">
+                    <label>Reception Time</label>
+                    <input type="text" id="receptionTime" value="6:00 PM - Late" required>
+                </div>
+
+                <div class="form-group full-width mt-4">
                     <label>Google Maps Embed URL</label>
                     <input type="text" id="mapUrl" value='https://www.google.com/maps/embed?pb=!3m2!1sen!2snz!4v1788342948558!5m2!1sen!2snz!6m8!1m7!1sWIFkBaE6nwyG10RKQSE5mQ!2m2!1d-36.68089580634993!2d174.5099508613131!3f285.1440468418404!4f-0.6514328407149321!5f0.7820865974627469' required>
                 </div>
@@ -140,11 +146,19 @@
         <!-- Base Image Uploads -->
         <div class="card">
             <h2>Website Photos</h2>
-            <p class="note mb-4" style="margin-bottom: 1.5rem;">Upload the main background image for the top of the website.</p>
+            <p class="note mb-4" style="margin-bottom: 1.5rem;">Upload the main background image and the venue photos.</p>
             <div class="form-grid">
                 <div class="form-group full-width">
                     <label>Hero Background Image</label>
                     <input type="file" id="heroImage" accept="image/*">
+                </div>
+                <div class="form-group">
+                    <label>Ceremony Location Image</label>
+                    <input type="file" id="ceremonyImage" accept="image/*">
+                </div>
+                <div class="form-group">
+                    <label>Reception Location Image</label>
+                    <input type="file" id="receptionImage" accept="image/*">
                 </div>
             </div>
         </div>
@@ -155,9 +169,14 @@
     <script>
         const imageBase64 = {
             heroImage: "https://images.unsplash.com/photo-1519225421980-715cb02151ff?ixlib=rb-4.0.3&auto=format&fit=crop&w=2070&q=80",
+            ceremonyImage: "https://images.unsplash.com/photo-1469334031218-e382a71b716b?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80",
+            receptionImage: "https://images.unsplash.com/photo-1519167758481-83f550bb49b3?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80",
             gallery1: "https://images.unsplash.com/photo-1606800052052-a08af7148866?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
             gallery2: "https://images.unsplash.com/photo-1583939003579-730e3918a45a?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
-            gallery3: "https://images.unsplash.com/photo-1520854221256-17451cc331bf?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80"
+            gallery3: "https://images.unsplash.com/photo-1520854221256-17451cc331bf?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
+            attire1: "https://images.unsplash.com/photo-1496747611176-843222e1e57c?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80",
+            attire2: "https://images.unsplash.com/photo-1594938298596-70f56bf3ac59?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80",
+            attire3: "https://images.unsplash.com/photo-1566737236500-c8ac43014a67?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80"
         };
 
         function handleFile(event, key) {
@@ -171,7 +190,7 @@
             }
         }
 
-        ['heroImage', 'gallery1', 'gallery2', 'gallery3'].forEach(id => {
+        ['heroImage', 'ceremonyImage', 'receptionImage', 'gallery1', 'gallery2', 'gallery3'].forEach(id => {
             const el = document.getElementById(id);
             if (el) el.addEventListener('change', (e) => handleFile(e, id));
         });
@@ -188,9 +207,16 @@
                 hashtag: document.getElementById('hashtag').value,
                 spotifyUrl: document.getElementById('spotifyUrl').value,
                 location: {
-                    venue: document.getElementById('venueName').value,
-                    region: document.getElementById('venueRegion').value,
-                    address: document.getElementById('venueAddress').value,
+                    ceremony: {
+                        time: document.getElementById('ceremonyTime').value,
+                        name: document.getElementById('venueName').value,
+                        address: document.getElementById('venueAddress').value
+                    },
+                    reception: {
+                        time: document.getElementById('receptionTime').value,
+                        name: document.getElementById('venueName').value,
+                        address: document.getElementById('venueAddress').value
+                    },
                     mapUrl: document.getElementById('mapUrl').value
                 },
                 story: [
@@ -212,10 +238,19 @@
                 ],
                 images: {
                     hero: imageBase64.heroImage,
+                    events: {
+                        ceremony: imageBase64.ceremonyImage,
+                        reception: imageBase64.receptionImage
+                    },
                     gallery: [
                         imageBase64.gallery1,
                         imageBase64.gallery2,
                         imageBase64.gallery3
+                    ],
+                    attire: [
+                        imageBase64.attire1,
+                        imageBase64.attire2,
+                        imageBase64.attire3
                     ]
                 }
             };
