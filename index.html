@@ -23,16 +23,13 @@
             const paths = {
                 Heart: <path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/>,
                 MapPin: <><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></>,
-                Calendar: <><rect width="18" height="18" x="3" y="4" rx="2" ry="2"/><line x1="16" x2="16" y1="2" y2="6"/><line x1="8" x2="8" y1="2" y2="6"/><line x1="3" x2="21" y1="10" y2="10"/></>,
-                Clock: <><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></>,
-                Utensils: <><path d="M3 2v7c0 1.1.9 2 2 2h4a2 2 0 0 0 2-2V2"/><path d="M7 2v20"/><path d="M21 15V2v0a5 5 0 0 0-5 5v6c0 1.1.9 2 2 2h3Zm0 0v7"/></>,
-                Music: <><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></>,
                 ChevronDown: <polyline points="6 9 12 15 18 9"/>,
                 Camera: <><path d="M14.5 4h-5L7 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3l-2.5-3z"/><circle cx="12" cy="13" r="3"/></>,
                 Sparkles: <><path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z"/><path d="M5 3v4"/><path d="M19 17v4"/><path d="M3 5h4"/><path d="M17 19h4"/></>,
                 Flower2: <><path d="M12 5a3 3 0 1 1-3 3m3-3a3 3 0 1 0 3 3m-3-3v14m-4 0a4 4 0 0 0 4-4m0 4a4 4 0 0 1-4-4"/></>,
                 Navigation: <polygon points="3 11 22 2 13 21 11 13 3 11"/>,
-                Loader2: <path className="animate-spin" d="M21 12a9 9 0 1 1-6.219-8.56"/>
+                Loader2: <path className="animate-spin" d="M21 12a9 9 0 1 1-6.219-8.56"/>,
+                Music: <><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></>
             };
             return (
                 <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={strokeWidth} strokeLinecap="round" strokeLinejoin="round" className={className}>
@@ -43,22 +40,18 @@
 
         const Heart = (props) => <Icon name="Heart" {...props} />;
         const MapPin = (props) => <Icon name="MapPin" {...props} />;
-        const Calendar = (props) => <Icon name="Calendar" {...props} />;
-        const Clock = (props) => <Icon name="Clock" {...props} />;
-        const Utensils = (props) => <Icon name="Utensils" {...props} />;
-        const Music = (props) => <Icon name="Music" {...props} />;
         const ChevronDown = (props) => <Icon name="ChevronDown" {...props} />;
         const Camera = (props) => <Icon name="Camera" {...props} />;
         const Sparkles = (props) => <Icon name="Sparkles" {...props} />;
         const Flower2 = (props) => <Icon name="Flower2" {...props} />;
         const Navigation = (props) => <Icon name="Navigation" {...props} />;
         const Loader2 = (props) => <Icon name="Loader2" {...props} />;
+        const Music = (props) => <Icon name="Music" {...props} />;
 
         // --- Main Application ---
         function WeddingInvitation() {
             const [config, setConfig] = useState(null);
             const [introState, setIntroState] = useState('initial');
-            const [timeLeft, setTimeLeft] = useState({ days: 0, hours: 0, minutes: 0, seconds: 0 });
             const [isScrolled, setIsScrolled] = useState(false);
             const [loadingConfig, setLoadingConfig] = useState(true);
 
@@ -75,14 +68,15 @@
                     })
                     .catch(error => {
                         console.log("Using default fallback data because config.json wasn't found.");
-                        // Fallback data matching the required specs
                         setConfig({
                             names: { groom: "Allen", bride: "Marry" },
                             date: "2026-09-08",
+                            hashtag: "#MarryHaveAllenIt",
+                            spotifyUrl: "https://open.spotify.com/embed/playlist/37i9dQZF1DXcBWIGoYBM5M?utm_source=generator",
                             location: {
-                                time: "3:00 PM Sharp", 
                                 venue: "The Stable Cottage", 
-                                address: "720 Peak Road, Helensville, North West Auckland",
+                                region: "North West Auckland",
+                                address: "720 Peak Road, Helensville",
                                 mapUrl: "https://www.google.com/maps/embed?pb=!3m2!1sen!2snz!4v1788342948558!5m2!1sen!2snz!6m8!1m7!1sWIFkBaE6nwyG10RKQSE5mQ!2m2!1d-36.68089580634993!2d174.5099508613131!3f285.1440468418404!4f-0.6514328407149321!5f0.7820865974627469"
                             },
                             story: [
@@ -96,10 +90,6 @@
                                     "https://images.unsplash.com/photo-1606800052052-a08af7148866?auto=format&fit=crop&w=800&q=80",
                                     "https://images.unsplash.com/photo-1583939003579-730e3918a45a?auto=format&fit=crop&w=800&q=80",
                                     "https://images.unsplash.com/photo-1520854221256-17451cc331bf?auto=format&fit=crop&w=800&q=80"
-                                ],
-                                attire: [
-                                    "https://images.unsplash.com/photo-1496747611176-843222e1e57c?auto=format&fit=crop&w=600&q=80",
-                                    "https://images.unsplash.com/photo-1594938298596-70f56bf3ac59?auto=format&fit=crop&w=600&q=80"
                                 ]
                             }
                         });
@@ -130,39 +120,15 @@
                 return () => window.removeEventListener('scroll', handleScroll);
             }, []);
 
-            // Countdown Logic
-            useEffect(() => {
-                if (!config) return;
-                
-                const targetDate = new Date(`${config.date}T15:00:00`).getTime();
-                
-                const calculateTime = () => {
-                    const now = new Date().getTime();
-                    const difference = targetDate - now;
-                    if (difference > 0) {
-                        return {
-                            days: Math.floor(difference / (1000 * 60 * 60 * 24)),
-                            hours: Math.floor((difference / (1000 * 60 * 60)) % 24),
-                            minutes: Math.floor((difference / 1000 / 60) % 60),
-                            seconds: Math.floor((difference / 1000) % 60)
-                        };
-                    }
-                    return { days: 0, hours: 0, minutes: 0, seconds: 0 };
-                };
-
-                setTimeLeft(calculateTime());
-                const timer = setInterval(() => setTimeLeft(calculateTime()), 1000);
-                return () => clearInterval(timer);
-            }, [config]);
-
             const scrollTo = (id) => {
                 const element = document.getElementById(id);
                 if (element) element.scrollIntoView({ behavior: 'smooth' });
             };
 
             const formatDateDisplay = (dateString) => {
-                const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
-                return new Date(dateString).toLocaleDateString('en-NZ', options);
+                const options = { year: 'numeric', month: 'short', day: 'numeric' };
+                const date = new Date(dateString);
+                return `${date.getDate()} ${date.toLocaleString('default', { month: 'short' })} ${date.getFullYear()}`;
             };
 
             const getEnvelopeClasses = () => {
@@ -222,7 +188,7 @@
                                         </h2>
                                         <div className="w-12 h-[1px] bg-[#D4A5A5] mb-4"></div>
                                         <p className="text-[#93A897] uppercase tracking-widest text-[9px] text-center leading-relaxed">
-                                            8 Sept 2026<br/>Auckland, New Zealand
+                                            {formatDateDisplay(config.date)}<br/>{config.location.region}
                                         </p>
                                         </div>
                                     </div>
@@ -248,14 +214,12 @@
                         </div>
                     )}
 
-                    {/* ---------------- MAIN APP ---------------- */}
-                    
                     {/* Floating Navigation */}
                     <nav className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ${isScrolled ? 'bg-white/95 backdrop-blur-md shadow-sm py-4' : 'bg-transparent py-6'}`}>
                         <div className="max-w-5xl mx-auto px-4 flex justify-center items-center space-x-4 md:space-x-10 text-xs md:text-sm uppercase tracking-[0.1em] md:tracking-[0.2em] text-[#7A8A7D] font-medium">
                         <button onClick={() => scrollTo('home')} className="hover:text-[#D4A5A5] transition-colors">Home</button>
                         <button onClick={() => scrollTo('gallery')} className="hover:text-[#D4A5A5] transition-colors">Story</button>
-                        <button onClick={() => scrollTo('details')} className="hover:text-[#D4A5A5] transition-colors">Details</button>
+                        <button onClick={() => scrollTo('details')} className="hover:text-[#D4A5A5] transition-colors">Location</button>
                         </div>
                     </nav>
 
@@ -267,12 +231,15 @@
                         </div>
 
                         <div className="z-10 text-center flex flex-col items-center space-y-8 max-w-4xl mx-auto mt-16 p-8 bg-white/40 backdrop-blur-sm rounded-3xl border border-white/50 shadow-2xl">
-                        <p className="uppercase tracking-[0.3em] text-[#5A6A5E] text-sm md:text-base animate-fade-in font-bold">
+                        <p className="uppercase tracking-[0.3em] text-[#D4A5A5] text-sm md:text-base animate-fade-in font-bold">
                             {formatDateDisplay(config.date)}
                         </p>
                         <h1 className="font-serif text-6xl md:text-8xl lg:text-9xl text-[#2A3B2E] leading-tight tracking-tight shadow-sm">
                             {config.names.groom} & {config.names.bride}
                         </h1>
+                        <p className="text-xl md:text-2xl font-medium text-[#93A897] tracking-widest uppercase">
+                            {config.hashtag}
+                        </p>
                         
                         <div className="flex items-center space-x-6 text-[#D4A5A5]">
                             <span className="w-16 h-[1px] bg-[#93A897]"></span>
@@ -282,29 +249,12 @@
                         
                         <div className="space-y-2 text-center animate-fade-in animation-delay-500">
                             <p className="text-xl md:text-3xl font-serif italic text-[#3A4A3E]">We are getting married</p>
-                            <p className="text-lg md:text-xl text-[#5A6A5E] uppercase tracking-widest font-medium">Auckland, New Zealand</p>
+                            <p className="text-lg md:text-xl text-[#5A6A5E] uppercase tracking-widest font-medium">{config.location.region}, New Zealand</p>
                         </div>
                         </div>
 
-                        <div className="absolute bottom-8 z-10 animate-bounce cursor-pointer text-[#5A6A5E] hover:text-[#D4A5A5] transition-colors" onClick={() => scrollTo('countdown')}>
+                        <div className="absolute bottom-8 z-10 animate-bounce cursor-pointer text-[#5A6A5E] hover:text-[#D4A5A5] transition-colors" onClick={() => scrollTo('gallery')}>
                         <ChevronDown size={36} strokeWidth={1.5} />
-                        </div>
-                    </section>
-
-                    {/* Countdown Section */}
-                    <section id="countdown" className="py-24 bg-white px-4 border-b border-[#F0EBEB]">
-                        <div className="max-w-4xl mx-auto text-center">
-                        <p className="uppercase tracking-[0.2em] text-[#D4A5A5] text-sm mb-4">The Countdown</p>
-                        <h2 className="font-serif text-4xl md:text-5xl text-[#2A3B2E] mb-16">Waiting for the Big Day</h2>
-                        
-                        <div className="flex flex-wrap justify-center gap-4 md:gap-8">
-                            {[{ label: 'Days', value: timeLeft.days }, { label: 'Hours', value: timeLeft.hours }, { label: 'Minutes', value: timeLeft.minutes }, { label: 'Seconds', value: timeLeft.seconds }].map((unit, idx) => (
-                            <div key={idx} className="bg-[#FDFCF8] w-24 h-24 md:w-36 md:h-36 flex flex-col items-center justify-center rounded-full shadow-sm border border-[#EAD5D5] transform transition hover:scale-105">
-                                <span className="font-serif text-3xl md:text-5xl text-[#2A3B2E] mb-1">{unit.value}</span>
-                                <span className="text-xs md:text-sm uppercase tracking-[0.2em] text-[#93A897]">{unit.label}</span>
-                            </div>
-                            ))}
-                        </div>
                         </div>
                     </section>
 
@@ -349,22 +299,14 @@
                         <div className="max-w-6xl mx-auto relative z-10">
                         <div className="text-center mb-16">
                             <p className="uppercase tracking-[0.2em] text-[#93A897] text-sm mb-4">When & Where</p>
-                            <h2 className="font-serif text-4xl md:text-5xl text-[#2A3B2E] mb-6">Event Details</h2>
-                            <p className="text-[#6B7B6D] max-w-xl mx-auto">Join us for a beautiful afternoon ceremony followed by an evening of dinner and dancing.</p>
+                            <h2 className="font-serif text-4xl md:text-5xl text-[#2A3B2E] mb-6">The Venue</h2>
                         </div>
 
                         <div className="max-w-3xl mx-auto bg-[#FDFCF8] rounded-3xl overflow-hidden shadow-lg border border-[#EAD5D5] mb-16">
                             <div className="p-8 md:p-12 text-center">
                                 <Flower2 size={36} className="text-[#D4A5A5] mx-auto mb-6" />
                                 <h3 className="font-serif text-3xl text-[#2A3B2E] mb-2">{config.location.venue}</h3>
-                                <p className="text-[#6B7B6D] mb-8">{config.location.address}</p>
-                                
-                                <div className="flex flex-col md:flex-row justify-center items-center gap-8 text-[#5A6A5E] mb-8">
-                                    <div className="flex items-center">
-                                        <Clock className="w-5 h-5 mr-3 text-[#D4A5A5]" />
-                                        <span className="font-medium text-[#2A3B2E]">{config.location.time}</span>
-                                    </div>
-                                </div>
+                                <p className="text-[#6B7B6D] text-lg">{config.location.address}</p>
                             </div>
                         </div>
 
@@ -404,38 +346,37 @@
                             <span className="text-sm uppercase tracking-widest font-medium">Open in Waze</span>
                             </a>
                         </div>
-                        
-                        {/* Suggested Attire Block */}
-                        <div className="bg-[#FDFCF8] p-8 md:p-14 rounded-3xl text-center border border-[#EAD5D5] shadow-lg shadow-[#EAD5D5]/20 max-w-5xl mx-auto">
-                            <h4 className="font-serif text-3xl md:text-4xl text-[#2A3B2E] mb-4">Suggested Attire: Spring Elegance</h4>
-                            <p className="text-[#6B7B6D] mb-10 text-lg max-w-2xl mx-auto">We kindly request our guests to dress in beautiful spring garden colors. Think soft pastels, vibrant floral prints, sage greens, and warm neutral tones.</p>
-                            
-                            <div className="flex flex-wrap justify-center gap-6 md:gap-12 mb-12">
-                            <div className="flex flex-col items-center"><div className="w-16 h-16 rounded-full bg-[#D4A5A5] shadow-inner mb-3 border-[3px] border-white ring-1 ring-[#EAD5D5]"></div><span className="text-xs uppercase tracking-widest text-[#7A8A7D]">Blush</span></div>
-                            <div className="flex flex-col items-center"><div className="w-16 h-16 rounded-full bg-[#93A897] shadow-inner mb-3 border-[3px] border-white ring-1 ring-[#E8ECE6]"></div><span className="text-xs uppercase tracking-widest text-[#7A8A7D]">Sage</span></div>
-                            <div className="flex flex-col items-center"><div className="w-16 h-16 rounded-full bg-[#B57D7D] shadow-inner mb-3 border-[3px] border-white ring-1 ring-[#F0EBEB]"></div><span className="text-xs uppercase tracking-widest text-[#7A8A7D]">Dusty Rose</span></div>
-                            <div className="flex flex-col items-center"><div className="w-16 h-16 rounded-full bg-[#DCE5DE] shadow-inner mb-3 border-[3px] border-white ring-1 ring-[#E8ECE6]"></div><span className="text-xs uppercase tracking-widest text-[#7A8A7D]">Mist</span></div>
-                            <div className="flex flex-col items-center"><div className="w-16 h-16 rounded-full bg-[#EADDCD] shadow-inner mb-3 border-[3px] border-white ring-1 ring-[#F0EBEB]"></div><span className="text-xs uppercase tracking-widest text-[#7A8A7D]">Soft Gold</span></div>
-                            </div>
-
-                            <div className="pt-10 border-t border-[#E8ECE6]">
-                            <p className="uppercase tracking-[0.2em] text-[#93A897] text-xs mb-8">Attire Inspiration</p>
-                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 max-w-2xl mx-auto">
-                                {config.images.attire.map((imgSrc, idx) => (
-                                    <div key={idx} className="h-[300px] rounded-2xl overflow-hidden shadow-sm group relative">
-                                        <img src={imgSrc} alt={`Attire Inspiration ${idx + 1}`} className="w-full h-full object-cover transform group-hover:scale-105 transition-transform duration-700" />
-                                        <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end justify-center pb-4"><span className="text-white text-sm font-medium tracking-wide">Inspiration</span></div>
-                                    </div>
-                                ))}
-                            </div>
-                            </div>
-                        </div>
                         </div>
                     </section>
 
+                    {/* Playlist Section */}
+                    {config.spotifyUrl && (
+                        <section className="py-16 px-4 bg-[#F6ECEC] text-center border-t border-[#EAD5D5]">
+                            <div className="max-w-3xl mx-auto">
+                                <div className="w-16 h-16 bg-white rounded-full flex items-center justify-center mx-auto mb-6 shadow-sm text-[#93A897]">
+                                    <Music size={28} />
+                                </div>
+                                <h2 className="font-serif text-3xl md:text-4xl text-[#2A3B2E] mb-8">Our Wedding Vibe</h2>
+                                <div className="rounded-2xl overflow-hidden shadow-lg border border-[#E8ECE6]">
+                                    <iframe 
+                                        style={{borderRadius: '12px'}} 
+                                        src={config.spotifyUrl} 
+                                        width="100%" 
+                                        height="352" 
+                                        frameBorder="0" 
+                                        allowFullScreen="" 
+                                        allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" 
+                                        loading="lazy">
+                                    </iframe>
+                                </div>
+                            </div>
+                        </section>
+                    )}
+
                     <footer className="py-16 text-center bg-[#1F2B22] text-[#93A897]">
                         <Flower2 size={32} className="mx-auto mb-6 text-[#D4A5A5] opacity-80" strokeWidth={1} />
-                        <h2 className="font-serif text-4xl text-[#FDFCF8] mb-6">{config.names.groom[0]} & {config.names.bride[0]}</h2>
+                        <h2 className="font-serif text-4xl text-[#FDFCF8] mb-2">{config.names.groom[0]} & {config.names.bride[0]}</h2>
+                        <p className="text-[#D4A5A5] font-medium tracking-widest uppercase text-sm mb-6">{config.hashtag}</p>
                         <p className="text-xs opacity-60 mt-8">Made with Love &bull; {new Date(config.date).getFullYear()}</p>
                     </footer>
 
