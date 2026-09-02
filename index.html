@@ -23,30 +23,38 @@
             const paths = {
                 Heart: <path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/>,
                 MapPin: <><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></>,
+                Clock: <><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></>,
+                Utensils: <><path d="M3 2v7c0 1.1.9 2 2 2h4a2 2 0 0 0 2-2V2"/><path d="M7 2v20"/><path d="M21 15V2v0a5 5 0 0 0-5 5v6c0 1.1.9 2 2 2h3Zm0 0v7"/></>,
+                Music: <><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></>,
                 ChevronDown: <polyline points="6 9 12 15 18 9"/>,
-                Camera: <><path d="M14.5 4h-5L7 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3l-2.5-3z"/><circle cx="12" cy="13" r="3"/></>,
+                CheckCircle: <><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></>,
+                Send: <><line x1="22" x2="11" y1="2" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></>,
                 Sparkles: <><path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z"/><path d="M5 3v4"/><path d="M19 17v4"/><path d="M3 5h4"/><path d="M17 19h4"/></>,
                 Flower2: <><path d="M12 5a3 3 0 1 1-3 3m3-3a3 3 0 1 0 3 3m-3-3v14m-4 0a4 4 0 0 0 4-4m0 4a4 4 0 0 1-4-4"/></>,
                 Navigation: <polygon points="3 11 22 2 13 21 11 13 3 11"/>,
                 Loader2: <path className="animate-spin" d="M21 12a9 9 0 1 1-6.219-8.56"/>,
-                Music: <><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></>
+                X: <><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></>
             };
             return (
                 <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={strokeWidth} strokeLinecap="round" strokeLinejoin="round" className={className}>
-                    {paths[name]}
+                    {paths[name] || paths.Heart}
                 </svg>
             );
         };
 
         const Heart = (props) => <Icon name="Heart" {...props} />;
         const MapPin = (props) => <Icon name="MapPin" {...props} />;
+        const Clock = (props) => <Icon name="Clock" {...props} />;
+        const Utensils = (props) => <Icon name="Utensils" {...props} />;
+        const Music = (props) => <Icon name="Music" {...props} />;
         const ChevronDown = (props) => <Icon name="ChevronDown" {...props} />;
-        const Camera = (props) => <Icon name="Camera" {...props} />;
+        const CheckCircle = (props) => <Icon name="CheckCircle" {...props} />;
+        const Send = (props) => <Icon name="Send" {...props} />;
         const Sparkles = (props) => <Icon name="Sparkles" {...props} />;
         const Flower2 = (props) => <Icon name="Flower2" {...props} />;
         const Navigation = (props) => <Icon name="Navigation" {...props} />;
         const Loader2 = (props) => <Icon name="Loader2" {...props} />;
-        const Music = (props) => <Icon name="Music" {...props} />;
+        const XIcon = (props) => <Icon name="X" {...props} />;
 
         // --- Main Application ---
         function WeddingInvitation() {
@@ -54,6 +62,14 @@
             const [introState, setIntroState] = useState('initial');
             const [isScrolled, setIsScrolled] = useState(false);
             const [loadingConfig, setLoadingConfig] = useState(true);
+            
+            // Interactive RSVP Modal State
+            const [showRsvpModal, setShowRsvpModal] = useState(false);
+            const [rsvpStatus, setRsvpStatus] = useState('pending'); // pending, submitted
+            const [isSubmitting, setIsSubmitting] = useState(false);
+            const [formData, setFormData] = useState({
+                firstName: '', lastName: '', email: '', attending: 'yes', guestCount: '1', dietary: '', songRequest: ''
+            });
 
             // Fetch Config
             useEffect(() => {
@@ -62,21 +78,16 @@
                         if (!response.ok) throw new Error("Config not found");
                         return response.json();
                     })
-                    .then(data => {
-                        setConfig(data);
-                        setLoadingConfig(false);
-                    })
+                    .then(data => { setConfig(data); setLoadingConfig(false); })
                     .catch(error => {
                         console.log("Using default fallback data because config.json wasn't found.");
                         setConfig({
                             names: { groom: "Allen", bride: "Marry" },
                             date: "2026-09-08",
-                            hashtag: "#MarryHaveAllenIt",
-                            spotifyUrl: "https://open.spotify.com/embed/playlist/6LZjtnX3f190Nnfts35DbM?utm_source=generator&si=31b0bde0108a4441",
+                            rsvpEmail: "allenvarias@gmail.com",
                             location: {
-                                venue: "The Stable Cottage", 
-                                region: "North West Auckland",
-                                address: "720 Peak Road, Helensville",
+                                ceremony: { time: "3:00 PM Sharp", name: "The Stable Cottage", address: "720 Peak Road, Helensville" },
+                                reception: { time: "6:00 PM - Late", name: "The Stable Cottage", address: "720 Peak Road, Helensville" },
                                 mapUrl: "https://www.google.com/maps/embed?pb=!3m2!1sen!2snz!4v1788342948558!5m2!1sen!2snz!6m8!1m7!1sWIFkBaE6nwyG10RKQSE5mQ!2m2!1d-36.68089580634993!2d174.5099508613131!3f285.1440468418404!4f-0.6514328407149321!5f0.7820865974627469"
                             },
                             story: [
@@ -86,10 +97,19 @@
                             ],
                             images: {
                                 hero: "https://images.unsplash.com/photo-1519225421980-715cb02151ff?auto=format&fit=crop&w=2070&q=80",
+                                events: {
+                                    ceremony: "https://images.unsplash.com/photo-1469334031218-e382a71b716b?auto=format&fit=crop&w=1000&q=80",
+                                    reception: "https://images.unsplash.com/photo-1519167758481-83f550bb49b3?auto=format&fit=crop&w=1000&q=80"
+                                },
                                 gallery: [
                                     "https://images.unsplash.com/photo-1606800052052-a08af7148866?auto=format&fit=crop&w=800&q=80",
                                     "https://images.unsplash.com/photo-1583939003579-730e3918a45a?auto=format&fit=crop&w=800&q=80",
                                     "https://images.unsplash.com/photo-1520854221256-17451cc331bf?auto=format&fit=crop&w=800&q=80"
+                                ],
+                                attire: [
+                                    "https://images.unsplash.com/photo-1496747611176-843222e1e57c?auto=format&fit=crop&w=600&q=80",
+                                    "https://images.unsplash.com/photo-1594938298596-70f56bf3ac59?auto=format&fit=crop&w=600&q=80",
+                                    "https://images.unsplash.com/photo-1566737236500-c8ac43014a67?auto=format&fit=crop&w=600&q=80"
                                 ]
                             }
                         });
@@ -107,11 +127,12 @@
                 setTimeout(() => setIntroState('done'), 6800);
             };
 
+            // Lock body scroll while envelope OR RSVP modal is active
             useEffect(() => {
-                if (introState !== 'done') document.body.style.overflow = 'hidden';
+                if (introState !== 'done' || showRsvpModal) document.body.style.overflow = 'hidden';
                 else document.body.style.overflow = 'auto';
                 return () => { document.body.style.overflow = 'auto'; };
-            }, [introState]);
+            }, [introState, showRsvpModal]);
 
             useEffect(() => {
                 const handleScroll = () => setIsScrolled(window.scrollY > 50);
@@ -134,12 +155,42 @@
                 }
             };
 
-            // Formatting Helper for Date
             const formatDate = (dateString) => {
                 try {
                     const date = new Date(dateString);
                     return new Intl.DateTimeFormat('en-GB', { day: 'numeric', month: 'short', year: 'numeric' }).format(date);
                 } catch { return "8 Sept 2026"; }
+            };
+
+            const handleInputChange = (e) => {
+                const { name, value } = e.target;
+                setFormData(prev => ({ ...prev, [name]: value }));
+            };
+
+            const submitRSVP = async (e) => {
+                e.preventDefault();
+                setIsSubmitting(true);
+                try {
+                    const response = await fetch(`https://formsubmit.co/ajax/${config.rsvpEmail}`, {
+                        method: "POST",
+                        headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+                        body: JSON.stringify({
+                            _subject: `New RSVP from ${formData.firstName} ${formData.lastName}!`,
+                            Name: `${formData.firstName} ${formData.lastName}`,
+                            Email: formData.email,
+                            Attending: formData.attending === 'yes' ? '✅ Joyfully Accept' : '❌ Regretfully Decline',
+                            Guests: formData.attending === 'yes' ? formData.guestCount : '0',
+                            DietaryRequirements: formData.dietary || 'None specified',
+                            SongRequest: formData.songRequest || 'None specified'
+                        })
+                    });
+                    if (response.ok) setRsvpStatus('submitted');
+                    else throw new Error("Submission failed");
+                } catch (error) {
+                    alert("Network error. Please check your connection and try again.");
+                } finally {
+                    setIsSubmitting(false);
+                }
             };
 
             if (loadingConfig || !config) {
@@ -151,9 +202,100 @@
             return (
                 <div className="min-h-screen bg-[#FDFCF8] text-[#3A4A3E] font-sans selection:bg-[#EAD5D5] selection:text-[#2A3B2E] relative">
                     
+                    {/* ---------------- INTERACTIVE RSVP MODAL OVERLAY ---------------- */}
+                    {showRsvpModal && (
+                        <div className="fixed inset-0 z-[10000] flex items-center justify-center p-4">
+                            <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={() => setShowRsvpModal(false)}></div>
+                            
+                            <div className="bg-[#FDFCF8] w-full max-w-lg rounded-3xl shadow-2xl z-10 overflow-hidden animate-fade-in flex flex-col max-h-[90vh]">
+                                <div className="bg-[#2A3B2E] text-white p-6 relative shrink-0">
+                                    <button onClick={() => setShowRsvpModal(false)} className="absolute top-6 right-6 text-white/70 hover:text-white transition-colors">
+                                        <XIcon size={24} />
+                                    </button>
+                                    <p className="uppercase tracking-[0.2em] text-[#93A897] text-xs mb-2">Kindly Reply</p>
+                                    <h2 className="font-serif text-3xl md:text-4xl text-[#FDFCF8]">RSVP</h2>
+                                </div>
+
+                                <div className="p-6 md:p-8 overflow-y-auto">
+                                    {rsvpStatus === 'submitted' ? (
+                                        <div className="text-center py-12">
+                                            <div className="w-20 h-20 bg-[#D4A5A5] rounded-full flex items-center justify-center mx-auto mb-6 shadow-lg">
+                                                <CheckCircle size={40} className="text-white" />
+                                            </div>
+                                            <h3 className="font-serif text-3xl text-[#2A3B2E] mb-3">Thank You!</h3>
+                                            <p className="text-[#6B7B6D] mb-6">We have received your response. We can't wait to celebrate under the sun with you!</p>
+                                            <button onClick={() => setShowRsvpModal(false)} className="px-8 py-3 bg-[#93A897] text-white rounded-full uppercase tracking-widest text-sm hover:bg-[#7A8A7D]">Close</button>
+                                        </div>
+                                    ) : (
+                                        <form onSubmit={submitRSVP} className="space-y-6">
+                                            <div className="grid grid-cols-2 gap-4">
+                                                <div>
+                                                    <label className="block text-xs uppercase tracking-widest text-[#93A897] mb-2">First Name</label>
+                                                    <input type="text" name="firstName" required value={formData.firstName} onChange={handleInputChange} className="w-full bg-white border border-[#E8ECE6] rounded-xl px-4 py-3 focus:outline-none focus:border-[#D4A5A5]" placeholder="Jane" />
+                                                </div>
+                                                <div>
+                                                    <label className="block text-xs uppercase tracking-widest text-[#93A897] mb-2">Last Name</label>
+                                                    <input type="text" name="lastName" required value={formData.lastName} onChange={handleInputChange} className="w-full bg-white border border-[#E8ECE6] rounded-xl px-4 py-3 focus:outline-none focus:border-[#D4A5A5]" placeholder="Doe" />
+                                                </div>
+                                            </div>
+
+                                            <div>
+                                                <label className="block text-xs uppercase tracking-widest text-[#93A897] mb-2">Email</label>
+                                                <input type="email" name="email" required value={formData.email} onChange={handleInputChange} className="w-full bg-white border border-[#E8ECE6] rounded-xl px-4 py-3 focus:outline-none focus:border-[#D4A5A5]" placeholder="jane@example.com" />
+                                            </div>
+
+                                            <div className="pt-2">
+                                                <label className="block text-xs uppercase tracking-widest text-[#93A897] mb-3">Will you attend?</label>
+                                                <div className="flex flex-col sm:flex-row gap-4">
+                                                    <label className={`flex-1 border rounded-xl p-4 cursor-pointer transition-all flex items-center justify-center space-x-3 ${formData.attending === 'yes' ? 'border-[#93A897] bg-[#93A897]/5' : 'border-[#E8ECE6] hover:border-[#93A897]/50'}`}>
+                                                        <div className={`w-5 h-5 rounded-full border flex items-center justify-center ${formData.attending === 'yes' ? 'border-[#93A897]' : 'border-gray-300'}`}>
+                                                            {formData.attending === 'yes' && <div className="w-2.5 h-2.5 bg-[#93A897] rounded-full"></div>}
+                                                        </div>
+                                                        <input type="radio" name="attending" value="yes" checked={formData.attending === 'yes'} onChange={handleInputChange} className="hidden" />
+                                                        <span className="font-medium">Joyfully Accept</span>
+                                                    </label>
+                                                    <label className={`flex-1 border rounded-xl p-4 cursor-pointer transition-all flex items-center justify-center space-x-3 ${formData.attending === 'no' ? 'border-[#D4A5A5] bg-[#D4A5A5]/5' : 'border-[#E8ECE6] hover:border-[#D4A5A5]/50'}`}>
+                                                        <div className={`w-5 h-5 rounded-full border flex items-center justify-center ${formData.attending === 'no' ? 'border-[#D4A5A5]' : 'border-gray-300'}`}>
+                                                            {formData.attending === 'no' && <div className="w-2.5 h-2.5 bg-[#D4A5A5] rounded-full"></div>}
+                                                        </div>
+                                                        <input type="radio" name="attending" value="no" checked={formData.attending === 'no'} onChange={handleInputChange} className="hidden" />
+                                                        <span className="font-medium">Regretfully Decline</span>
+                                                    </label>
+                                                </div>
+                                            </div>
+
+                                            {formData.attending === 'yes' && (
+                                                <div className="space-y-6 animate-fade-in pt-4 border-t border-[#E8ECE6]">
+                                                    <div>
+                                                        <label className="block text-xs uppercase tracking-widest text-[#93A897] mb-2">Number of Guests</label>
+                                                        <select name="guestCount" value={formData.guestCount} onChange={handleInputChange} className="w-full bg-white border border-[#E8ECE6] rounded-xl px-4 py-3 focus:outline-none focus:border-[#D4A5A5]">
+                                                            {[1, 2, 3, 4, 5].map(n => <option key={n} value={n}>{n}</option>)}
+                                                        </select>
+                                                    </div>
+                                                    <div>
+                                                        <label className="block text-xs uppercase tracking-widest text-[#93A897] mb-2">Dietary Requirements (Optional)</label>
+                                                        <input type="text" name="dietary" value={formData.dietary} onChange={handleInputChange} className="w-full bg-white border border-[#E8ECE6] rounded-xl px-4 py-3 focus:outline-none focus:border-[#D4A5A5]" placeholder="e.g. Vegetarian, Nut Allergy" />
+                                                    </div>
+                                                    <div>
+                                                        <label className="block text-xs uppercase tracking-widest text-[#93A897] mb-2">Song Request (Optional)</label>
+                                                        <input type="text" name="songRequest" value={formData.songRequest} onChange={handleInputChange} className="w-full bg-white border border-[#E8ECE6] rounded-xl px-4 py-3 focus:outline-none focus:border-[#D4A5A5]" placeholder="What gets you on the dance floor?" />
+                                                    </div>
+                                                </div>
+                                            )}
+
+                                            <button type="submit" disabled={isSubmitting} className={`w-full py-4 mt-4 bg-[#2A3B2E] text-white rounded-xl uppercase tracking-widest text-sm transition-all flex items-center justify-center space-x-2 ${isSubmitting ? 'opacity-80' : 'hover:bg-[#3A4A3E]'}`}>
+                                                {isSubmitting ? <><Loader2 size={18} className="animate-spin" /><span>Sending...</span></> : <><Send size={18} /><span>Send RSVP</span></>}
+                                            </button>
+                                        </form>
+                                    )}
+                                </div>
+                            </div>
+                        </div>
+                    )}
+
                     {/* ---------------- DRAMATIC FOLDED ENVELOPE INTRO ---------------- */}
                     {introState !== 'done' && (
-                        <div className={`fixed inset-0 z-[9999] flex flex-col items-center justify-center bg-[#150f0f] transition-opacity duration-1000 cursor-pointer ${introState === 'fading' ? 'opacity-0 pointer-events-none' : 'opacity-100'}`} onClick={openEnvelope}>
+                        <div className={`fixed inset-0 z-[9990] flex flex-col items-center justify-center bg-[#150f0f] transition-opacity duration-1000 cursor-pointer ${introState === 'fading' ? 'opacity-0 pointer-events-none' : 'opacity-100'}`} onClick={openEnvelope}>
                             <div className={`absolute top-[15%] text-[#D4A5A5] uppercase tracking-[0.4em] text-sm animate-pulse transition-opacity ${introState !== 'initial' ? 'opacity-0' : 'opacity-100'}`}>
                                 Tap anywhere to open
                             </div>
@@ -191,7 +333,7 @@
                                         </h2>
                                         <div className="w-12 h-[1px] bg-[#D4A5A5] mb-4"></div>
                                         <p className="text-[#93A897] uppercase tracking-widest text-[9px] text-center leading-relaxed">
-                                            {formattedWeddingDate}<br/>{config.location.region}
+                                            {formattedWeddingDate}<br/>New Zealand
                                         </p>
                                         </div>
                                     </div>
@@ -243,16 +385,17 @@
                                 <Flower2 size={24} className="text-[#D4A5A5]" strokeWidth={1.5} />
                                 <span className="w-16 h-[1px] bg-[#93A897]"></span>
                             </div>
-                            {/* Official Hashtag prominently displayed */}
-                            <p className="text-[#93A897] font-bold uppercase tracking-widest text-lg md:text-xl drop-shadow-sm">
-                                {config.hashtag}
-                            </p>
                         </div>
                         
-                        <div className="space-y-2 text-center animate-fade-in animation-delay-500 mt-4">
+                        <div className="space-y-2 text-center animate-fade-in animation-delay-500 mt-4 mb-8">
                             <p className="text-xl md:text-3xl font-serif italic text-[#3A4A3E]">We are getting married</p>
-                            <p className="text-lg md:text-xl text-[#5A6A5E] uppercase tracking-widest font-medium">{config.location.region}</p>
                         </div>
+
+                        {/* Pop-up trigger button */}
+                        <button onClick={() => setShowRsvpModal(true)} className="px-12 py-4 bg-[#D4A5A5] text-white rounded-full uppercase tracking-widest text-sm hover:bg-[#C28D8D] hover:shadow-xl transition-all transform hover:-translate-y-1 font-bold">
+                            RSVP Now
+                        </button>
+
                         </div>
 
                         <div className="absolute bottom-8 z-10 animate-bounce cursor-pointer text-[#5A6A5E] hover:text-[#D4A5A5] transition-colors" onClick={() => scrollTo('gallery')}>
@@ -268,18 +411,13 @@
                         </div>
 
                         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-20">
-                            <div className="h-[400px] rounded-2xl overflow-hidden shadow-lg group">
-                            <img src={config.images.gallery[0]} alt="Story 1" className="w-full h-full object-cover transform group-hover:scale-110 transition-transform duration-700" />
-                            </div>
-                            <div className="h-[400px] rounded-2xl overflow-hidden shadow-lg md:-translate-y-8 group">
-                            <img src={config.images.gallery[1]} alt="Story 2" className="w-full h-full object-cover transform group-hover:scale-110 transition-transform duration-700" />
-                            </div>
-                            <div className="h-[400px] rounded-2xl overflow-hidden shadow-lg group">
-                            <img src={config.images.gallery[2]} alt="Story 3" className="w-full h-full object-cover transform group-hover:scale-110 transition-transform duration-700" />
-                            </div>
+                            {config.images.gallery.map((imgUrl, index) => (
+                                <div key={index} className={`h-[400px] rounded-2xl overflow-hidden shadow-lg group ${index === 1 ? 'md:-translate-y-8' : ''}`}>
+                                    <img src={imgUrl} alt={`Memory ${index + 1}`} className="w-full h-full object-cover transform group-hover:scale-110 transition-transform duration-700" />
+                                </div>
+                            ))}
                         </div>
 
-                        {/* Dynamic Story Timeline */}
                         <div className="max-w-3xl mx-auto space-y-12 relative before:absolute before:inset-0 before:ml-5 before:-translate-x-px md:before:mx-auto md:before:translate-x-0 before:h-full before:w-0.5 before:bg-gradient-to-b before:from-transparent before:via-[#93A897] before:to-transparent">
                             {config.story.map((item, index) => (
                                 <div key={index} className="relative flex items-center justify-between md:justify-normal md:odd:flex-row-reverse">
@@ -304,39 +442,99 @@
                             <h2 className="font-serif text-4xl md:text-5xl text-[#2A3B2E] mb-6">Event Details</h2>
                         </div>
 
-                        <div className="bg-[#FDFCF8] rounded-3xl overflow-hidden shadow-lg border border-[#EAD5D5] mb-16 max-w-4xl mx-auto flex flex-col">
-                            <div className="p-8 md:p-12 text-center border-b border-[#EAD5D5]">
-                                <h3 className="font-serif text-3xl md:text-4xl text-[#2A3B2E] mb-4">{config.location.venue}</h3>
-                                <div className="flex items-center justify-center space-x-2 text-[#5A6A5E] mb-8">
-                                    <MapPin size={20} className="text-[#D4A5A5]" />
-                                    <span className="text-lg font-medium">{config.location.address}</span>
+                        <div className="grid lg:grid-cols-2 gap-10 mb-16">
+                            <div className="bg-[#FDFCF8] rounded-3xl overflow-hidden shadow-lg border border-[#EAD5D5] group flex flex-col">
+                                <div className="h-56 overflow-hidden relative">
+                                    <img src={config.images.events.ceremony} alt="Ceremony Location" className="w-full h-full object-cover transform group-hover:scale-105 transition-transform duration-700" />
+                                    <div className="absolute inset-0 bg-[#2A3B2E]/20"></div>
+                                    <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-16 h-16 bg-white/90 backdrop-blur rounded-full flex items-center justify-center shadow-lg">
+                                        <Flower2 size={28} className="text-[#D4A5A5]" />
+                                    </div>
+                                </div>
+                                <div className="p-8 md:p-10 flex-grow">
+                                    <h3 className="font-serif text-3xl text-[#2A3B2E] mb-2">The Ceremony</h3>
+                                    <ul className="space-y-6 mt-8">
+                                        <li className="flex items-start text-[#5A6A5E]">
+                                            <Clock className="w-6 h-6 mr-4 text-[#D4A5A5] shrink-0" />
+                                            <div><strong className="block font-medium text-[#2A3B2E]">{config.location.ceremony.time}</strong></div>
+                                        </li>
+                                        <li className="flex items-start text-[#5A6A5E]">
+                                            <MapPin className="w-6 h-6 mr-4 text-[#D4A5A5] shrink-0" />
+                                            <div><strong className="block font-medium text-[#2A3B2E]">{config.location.ceremony.name}</strong><span className="text-sm">{config.location.ceremony.address}</span></div>
+                                        </li>
+                                    </ul>
                                 </div>
                             </div>
 
-                            <div className="w-full h-[500px] relative">
-                                <iframe src={config.location.mapUrl} width="100%" height="100%" style={{ border: 0 }} allowFullScreen="" loading="lazy" referrerPolicy="no-referrer-when-downgrade" title="Wedding Map" className="z-10 relative grayscale-[20%] contrast-75 hover:grayscale-0 hover:contrast-100 transition-all duration-700"></iframe>
+                            <div className="bg-[#FDFCF8] rounded-3xl overflow-hidden shadow-lg border border-[#DCE5DE] group flex flex-col">
+                                <div className="h-56 overflow-hidden relative">
+                                    <img src={config.images.events.reception} alt="Reception Location" className="w-full h-full object-cover transform group-hover:scale-105 transition-transform duration-700" />
+                                    <div className="absolute inset-0 bg-[#2A3B2E]/20"></div>
+                                    <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-16 h-16 bg-white/90 backdrop-blur rounded-full flex items-center justify-center shadow-lg">
+                                        <Music size={28} className="text-[#93A897]" />
+                                    </div>
+                                </div>
+                                <div className="p-8 md:p-10 flex-grow">
+                                    <h3 className="font-serif text-3xl text-[#2A3B2E] mb-2">The Reception</h3>
+                                    <ul className="space-y-6 mt-8">
+                                        <li className="flex items-start text-[#5A6A5E]">
+                                            <Utensils className="w-6 h-6 mr-4 text-[#93A897] shrink-0" />
+                                            <div><strong className="block font-medium text-[#2A3B2E]">{config.location.reception.time}</strong></div>
+                                        </li>
+                                        <li className="flex items-start text-[#5A6A5E]">
+                                            <MapPin className="w-6 h-6 mr-4 text-[#93A897] shrink-0" />
+                                            <div><strong className="block font-medium text-[#2A3B2E]">{config.location.reception.name}</strong><span className="text-sm">{config.location.reception.address}</span></div>
+                                        </li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div className="w-full h-[400px] rounded-3xl overflow-hidden shadow-lg border border-[#E8ECE6] mb-6 relative group">
+                            <iframe src={config.location.mapUrl} width="100%" height="100%" style={{ border: 0 }} allowFullScreen="" loading="lazy" referrerPolicy="no-referrer-when-downgrade" title="Wedding Map" className="z-10 relative grayscale-[20%] contrast-75 hover:grayscale-0 hover:contrast-100 transition-all duration-700"></iframe>
+                        </div>
+
+                        <div className="flex flex-col sm:flex-row justify-center items-center gap-4 mb-16">
+                            <a href={`https://maps.google.com/?q=${encodeURIComponent(config.location.ceremony.address)}`} target="_blank" rel="noopener noreferrer" className="flex items-center space-x-2 px-6 py-3 bg-white border border-[#EAD5D5] text-[#5A6A5E] rounded-full hover:bg-[#FDFCF8] hover:border-[#D4A5A5] transition-all shadow-sm w-full sm:w-auto justify-center group">
+                                <MapPin size={18} className="text-[#D4A5A5] group-hover:scale-110 transition-transform" />
+                                <span className="text-sm uppercase tracking-widest font-medium">Open in Google Maps</span>
+                            </a>
+                            <a href={`https://waze.com/ul?q=${encodeURIComponent(config.location.ceremony.address)}`} target="_blank" rel="noopener noreferrer" className="flex items-center space-x-2 px-6 py-3 bg-white border border-[#EAD5D5] text-[#5A6A5E] rounded-full hover:bg-[#FDFCF8] hover:border-[#93A897] transition-all shadow-sm w-full sm:w-auto justify-center group">
+                                <Navigation size={18} className="text-[#93A897] group-hover:scale-110 transition-transform" />
+                                <span className="text-sm uppercase tracking-widest font-medium">Open in Waze</span>
+                            </a>
+                        </div>
+                        
+                        <div className="bg-[#FDFCF8] p-8 md:p-14 rounded-3xl text-center border border-[#EAD5D5] shadow-lg shadow-[#EAD5D5]/20 max-w-5xl mx-auto">
+                            <h4 className="font-serif text-3xl md:text-4xl text-[#2A3B2E] mb-4">Suggested Attire: Spring Elegance</h4>
+                            <p className="text-[#6B7B6D] mb-10 text-lg max-w-2xl mx-auto">We kindly request our guests to dress in beautiful spring garden colors. Think soft pastels, vibrant floral prints, sage greens, and warm neutral tones.</p>
+                            
+                            <div className="flex flex-wrap justify-center gap-6 md:gap-12 mb-12">
+                                <div className="flex flex-col items-center"><div className="w-16 h-16 rounded-full bg-[#D4A5A5] shadow-inner mb-3 border-[3px] border-white ring-1 ring-[#EAD5D5]"></div><span className="text-xs uppercase tracking-widest text-[#7A8A7D]">Blush</span></div>
+                                <div className="flex flex-col items-center"><div className="w-16 h-16 rounded-full bg-[#93A897] shadow-inner mb-3 border-[3px] border-white ring-1 ring-[#E8ECE6]"></div><span className="text-xs uppercase tracking-widest text-[#7A8A7D]">Sage</span></div>
+                                <div className="flex flex-col items-center"><div className="w-16 h-16 rounded-full bg-[#B57D7D] shadow-inner mb-3 border-[3px] border-white ring-1 ring-[#F0EBEB]"></div><span className="text-xs uppercase tracking-widest text-[#7A8A7D]">Dusty Rose</span></div>
+                                <div className="flex flex-col items-center"><div className="w-16 h-16 rounded-full bg-[#DCE5DE] shadow-inner mb-3 border-[3px] border-white ring-1 ring-[#E8ECE6]"></div><span className="text-xs uppercase tracking-widest text-[#7A8A7D]">Mist</span></div>
+                                <div className="flex flex-col items-center"><div className="w-16 h-16 rounded-full bg-[#EADDCD] shadow-inner mb-3 border-[3px] border-white ring-1 ring-[#F0EBEB]"></div><span className="text-xs uppercase tracking-widest text-[#7A8A7D]">Soft Gold</span></div>
+                            </div>
+
+                            <div className="pt-10 border-t border-[#E8ECE6]">
+                                <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
+                                    {config.images.attire.map((imgUrl, index) => (
+                                        <div key={index} className="h-[300px] rounded-2xl overflow-hidden shadow-sm group relative">
+                                            <img src={imgUrl} alt={`Attire ${index + 1}`} className="w-full h-full object-cover transform group-hover:scale-105 transition-transform duration-700" />
+                                            <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end justify-center pb-4"></div>
+                                        </div>
+                                    ))}
+                                </div>
                             </div>
                         </div>
                         </div>
                     </section>
 
                     <footer className="pt-16 pb-8 bg-[#1F2B22] text-[#93A897]">
-                        {/* Spotify Integration Section */}
-                        <div className="max-w-xl mx-auto px-4 mb-16">
-                            <div className="bg-[#151D17] p-6 rounded-3xl border border-[#2A3B2E] shadow-2xl">
-                                <div className="flex items-center justify-center space-x-3 mb-6">
-                                    <Music size={20} className="text-[#D4A5A5] animate-pulse" />
-                                    <p className="uppercase tracking-[0.2em] text-[#DCE5DE] text-sm font-medium">Set The Mood</p>
-                                    <Music size={20} className="text-[#D4A5A5] animate-pulse" />
-                                </div>
-                                <div dangerouslySetInnerHTML={{ __html: config.spotifyUrl }}></div>
-                            </div>
-                        </div>
-
                         <div className="text-center">
                             <Flower2 size={32} className="mx-auto mb-6 text-[#D4A5A5] opacity-80" strokeWidth={1} />
                             <h2 className="font-serif text-4xl text-[#FDFCF8] mb-4">{config.names.groom[0]} & {config.names.bride[0]}</h2>
-                            <p className="text-[#FDFCF8] font-bold tracking-widest mb-6">{config.hashtag}</p>
                             <p className="text-sm tracking-[0.3em] uppercase mb-2">We can't wait to celebrate with you</p>
                             <p className="text-xs opacity-60 mt-8">Made with Love &bull; 2026</p>
                         </div>
@@ -344,7 +542,7 @@
 
                     <style dangerouslySetInnerHTML={{__html: `
                         @keyframes fadeIn { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
-                        .animate-fade-in { animation: fadeIn 1s cubic-bezier(0.4, 0, 0.2, 1) forwards; }
+                        .animate-fade-in { animation: fadeIn 0.4s ease-out forwards; }
                         .animation-delay-500 { animation-delay: 500ms; }
                         .rotate-x-180 { transform: rotateX(180deg); }
                     `}} />
@@ -352,7 +550,6 @@
             );
         }
 
-        // Render the app
         const root = ReactDOM.createRoot(document.getElementById('root'));
         root.render(<WeddingInvitation />);
     </script>
