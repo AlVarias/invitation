@@ -3,210 +3,193 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Allen & Marry - Wedding Configurator</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Playfair+Display:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+    <title>Wedding App Configurator</title>
     <style>
-        body { font-family: 'Inter', sans-serif; background-color: #FDFCF8; color: #3A4A3E; }
-        h1, h2, h3 { font-family: 'Playfair Display', serif; }
-        .glass-panel { background: rgba(255, 255, 255, 0.8); backdrop-filter: blur(16px); border: 1px solid rgba(234, 213, 213, 0.5); }
-        input, textarea { width: 100%; padding: 0.75rem; border: 1px solid #E8ECE6; border-radius: 0.5rem; background: #FDFCF8; color: #2A3B2E; outline: none; transition: border-color 0.3s; }
-        input:focus, textarea:focus { border-color: #D4A5A5; }
-        label { display: block; font-size: 0.75rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.1em; color: #93A897; margin-bottom: 0.5rem; margin-top: 1rem; }
-        .image-preview { width: 100%; height: 160px; border-radius: 0.5rem; object-fit: cover; border: 2px dashed #E8ECE6; display: flex; align-items: center; justify-content: center; color: #93A897; font-size: 0.875rem; text-transform: uppercase; letter-spacing: 0.1em; cursor: pointer; transition: all 0.3s; overflow: hidden; position: relative; }
-        .image-preview:hover { border-color: #D4A5A5; color: #D4A5A5; }
-        .image-preview img { width: 100%; height: 100%; object-fit: cover; position: absolute; inset: 0; }
-        input[type="file"] { display: none; }
+        body { font-family: system-ui, sans-serif; background: #FDFCF8; color: #2A3B2E; max-width: 900px; margin: 0 auto; padding: 2rem; }
+        .card { background: white; padding: 2rem; border-radius: 1rem; box-shadow: 0 4px 6px rgba(0,0,0,0.05); border: 1px solid #EAD5D5; margin-bottom: 2rem; }
+        .form-grid { display: grid; grid-template-columns: 1fr; gap: 1.5rem; }
+        @media (min-width: 768px) { .form-grid { grid-template-columns: 1fr 1fr; } }
+        .full-width { grid-column: 1 / -1; }
+        .form-group { margin-bottom: 0; }
+        label { display: block; font-size: 0.875rem; font-weight: bold; text-transform: uppercase; letter-spacing: 0.1em; color: #93A897; margin-bottom: 0.5rem; }
+        input[type="text"], input[type="date"], input[type="url"], input[type="file"], textarea { width: 100%; padding: 0.75rem; border: 1px solid #E8ECE6; border-radius: 0.5rem; box-sizing: border-box; font-family: inherit; }
+        textarea { resize: vertical; min-height: 80px; }
+        .note { font-size: 0.8rem; color: #6B7B6D; margin-top: 0.25rem; }
+        h1 { font-family: serif; font-size: 2.5rem; text-align: center; margin-bottom: 2rem; }
+        h2 { font-family: serif; font-size: 1.5rem; color: #D4A5A5; margin-top: 0; margin-bottom: 1.5rem; border-bottom: 1px solid #E8ECE6; padding-bottom: 0.5rem; }
+        button { background: #D4A5A5; color: white; border: none; padding: 1rem 2rem; font-size: 1.125rem; text-transform: uppercase; letter-spacing: 0.1em; border-radius: 0.5rem; cursor: pointer; width: 100%; transition: background 0.3s; font-weight: bold; margin-bottom: 4rem; }
+        button:hover { background: #C28D8D; }
     </style>
 </head>
-<body class="p-4 md:p-8">
+<body>
 
-    <div class="max-w-4xl mx-auto">
-        
-        <div class="text-center mb-10">
-            <h1 class="text-4xl md:text-5xl text-[#2A3B2E] mb-2">Invitation Setup</h1>
-            <p class="uppercase tracking-[0.2em] text-[#D4A5A5] text-sm">Generate your config.json</p>
+    <h1>Invitation Configurator</h1>
+
+    <form id="configForm">
+        <!-- Basic Information & Media -->
+        <div class="card">
+            <h2>Basic Details</h2>
+            <div class="form-grid">
+                <div class="form-group">
+                    <label>Groom's Name</label>
+                    <input type="text" id="groomName" value="Allen" required>
+                </div>
+                <div class="form-group">
+                    <label>Bride's Name</label>
+                    <input type="text" id="brideName" value="Marry" required>
+                </div>
+                <div class="form-group">
+                    <label>Wedding Date</label>
+                    <input type="date" id="weddingDate" value="2026-09-08" required>
+                </div>
+                <div class="form-group">
+                    <label>Official Hashtag</label>
+                    <input type="text" id="hashtag" value="#MarryHaveAllenIt" required>
+                </div>
+                <div class="form-group full-width">
+                    <label>Spotify Playlist Embed URL</label>
+                    <input type="text" id="spotifyUrl" value="https://open.spotify.com/embed/playlist/37i9dQZF1DXcBWIGoYBM5M?utm_source=generator" required>
+                    <p class="note">Go to Spotify -> Share Playlist -> Embed playlist -> Copy the "src" URL.</p>
+                </div>
+            </div>
         </div>
 
-        <form id="weddingConfigForm" class="space-y-8">
-            
-            <!-- SECTION: Essential Details -->
-            <div class="glass-panel p-6 md:p-10 rounded-2xl shadow-sm">
-                <h2 class="text-2xl text-[#2A3B2E] mb-6 border-b border-[#E8ECE6] pb-2">1. Essential Details</h2>
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div><label>Groom's Name</label><input type="text" id="groomName" value="Allen" required></div>
-                    <div><label>Bride's Name</label><input type="text" id="brideName" value="Marry" required></div>
-                    <div class="md:col-span-2"><label>Wedding Date (YYYY-MM-DD)</label><input type="date" id="weddingDate" value="2026-09-08" required></div>
+        <!-- Locations -->
+        <div class="card">
+            <h2>The Venue</h2>
+            <div class="form-grid">
+                <div class="form-group">
+                    <label>Venue Name</label>
+                    <input type="text" id="venueName" value="The Stable Cottage" required>
+                </div>
+                <div class="form-group">
+                    <label>Venue Region</label>
+                    <input type="text" id="venueRegion" value="North West Auckland" required>
+                </div>
+                <div class="form-group full-width">
+                    <label>Exact Address</label>
+                    <input type="text" id="venueAddress" value="720 Peak Road, Helensville" required>
+                </div>
+                <div class="form-group full-width">
+                    <label>Google Maps Embed URL</label>
+                    <input type="text" id="mapUrl" value='https://www.google.com/maps/embed?pb=!3m2!1sen!2snz!4v1788342948558!5m2!1sen!2snz!6m8!1m7!1sWIFkBaE6nwyG10RKQSE5mQ!2m2!1d-36.68089580634993!2d174.5099508613131!3f285.1440468418404!4f-0.6514328407149321!5f0.7820865974627469' required>
                 </div>
             </div>
+        </div>
 
-            <!-- SECTION: Location -->
-            <div class="glass-panel p-6 md:p-10 rounded-2xl shadow-sm">
-                <h2 class="text-2xl text-[#2A3B2E] mb-6 border-b border-[#E8ECE6] pb-2">2. The Venue</h2>
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div class="md:col-span-2"><label>Ceremony Time</label><input type="text" id="ceremonyTime" value="3:00 PM Sharp"></div>
-                    <div><label>Venue Name</label><input type="text" id="venueName" value="The Stable Cottage"></div>
-                    <div><label>Exact Address</label><input type="text" id="venueAddress" value="720 Peak Road, Helensville, North West Auckland"></div>
-                    <div class="md:col-span-2">
-                        <label>Google Maps Embed URL</label>
-                        <input type="text" id="mapUrl" value='https://www.google.com/maps/embed?pb=!3m2!1sen!2snz!4v1788342948558!5m2!1sen!2snz!6m8!1m7!1sWIFkBaE6nwyG10RKQSE5mQ!2m2!1d-36.68089580634993!2d174.5099508613131!3f285.1440468418404!4f-0.6514328407149321!5f0.7820865974627469'>
-                        <p class="text-xs text-[#93A897] mt-2">Paste the "src" link from Google Maps (Share > Embed a map).</p>
-                    </div>
-                </div>
-            </div>
-
-            <!-- SECTION: The Love Story -->
-            <div class="glass-panel p-6 md:p-10 rounded-2xl shadow-sm">
-                <h2 class="text-2xl text-[#2A3B2E] mb-6 border-b border-[#E8ECE6] pb-2">3. Our Story</h2>
-                
+        <!-- Our Story -->
+        <div class="card">
+            <h2>Our Story</h2>
+            <div class="form-grid">
                 <!-- Story 1 -->
-                <div class="mb-8">
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <div><label>Story 1: Date</label><input type="text" id="story1Date" value="February 2020"></div>
-                        <div><label>Story 1: Title</label><input type="text" id="story1Title" value="The First Chat"></div>
-                        <div class="md:col-span-2"><label>Story 1: Text</label><textarea id="story1Text" rows="2">We started talking online and getting to know each other.</textarea></div>
-                    </div>
+                <div class="form-group">
+                    <label>Story 1: Date</label>
+                    <input type="text" id="story1Date" value="February 2020" required>
+                </div>
+                <div class="form-group">
+                    <label>Story 1: Title</label>
+                    <input type="text" id="story1Title" value="The First Chat" required>
+                </div>
+                <div class="form-group full-width">
+                    <label>Story 1: Details</label>
+                    <textarea id="story1Text" required>We started talking online and getting to know each other.</textarea>
+                </div>
+                <div class="form-group full-width">
+                    <label style="color:#D4A5A5;">Upload Photo for 'The First Chat'</label>
+                    <input type="file" id="gallery1" accept="image/*">
                 </div>
 
                 <!-- Story 2 -->
-                <div class="mb-8">
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <div><label>Story 2: Date</label><input type="text" id="story2Date" value="July 2020"></div>
-                        <div><label>Story 2: Title</label><input type="text" id="story2Title" value="The First Meeting"></div>
-                        <div class="md:col-span-2"><label>Story 2: Text</label><textarea id="story2Text" rows="3">We finally met in person with her family. It was during COVID times and she needed a ride back home too.</textarea></div>
-                    </div>
+                <div class="form-group mt-4">
+                    <label>Story 2: Date</label>
+                    <input type="text" id="story2Date" value="July 2020" required>
+                </div>
+                <div class="form-group mt-4">
+                    <label>Story 2: Title</label>
+                    <input type="text" id="story2Title" value="The First Meeting" required>
+                </div>
+                <div class="form-group full-width">
+                    <label>Story 2: Details</label>
+                    <textarea id="story2Text" required>We finally met in person with her family. It was during COVID times and she needed a ride back home too.</textarea>
+                </div>
+                <div class="form-group full-width">
+                    <label style="color:#D4A5A5;">Upload Photo for 'The First Meeting'</label>
+                    <input type="file" id="gallery2" accept="image/*">
                 </div>
 
                 <!-- Story 3 -->
-                <div>
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <div><label>Story 3: Date</label><input type="text" id="story3Date" value="April 2026"></div>
-                        <div><label>Story 3: Title</label><input type="text" id="story3Title" value="The Proposal"></div>
-                        <div class="md:col-span-2"><label>Story 3: Text</label><textarea id="story3Text" rows="2">Allen finally popped the question on Lake Tekapo.</textarea></div>
-                    </div>
+                <div class="form-group mt-4">
+                    <label>Story 3: Date</label>
+                    <input type="text" id="story3Date" value="April 2026" required>
+                </div>
+                <div class="form-group mt-4">
+                    <label>Story 3: Title</label>
+                    <input type="text" id="story3Title" value="The Proposal" required>
+                </div>
+                <div class="form-group full-width">
+                    <label>Story 3: Details</label>
+                    <textarea id="story3Text" required>Allen finally popped the question on Lake Tekapo.</textarea>
+                </div>
+                <div class="form-group full-width">
+                    <label style="color:#D4A5A5;">Upload Photo for 'The Proposal'</label>
+                    <input type="file" id="gallery3" accept="image/*">
                 </div>
             </div>
+        </div>
 
-            <!-- SECTION: Image Uploads -->
-            <div class="glass-panel p-6 md:p-10 rounded-2xl shadow-sm">
-                <h2 class="text-2xl text-[#2A3B2E] mb-6 border-b border-[#E8ECE6] pb-2">4. Upload Photography</h2>
-                <p class="text-sm text-[#6B7B6D] mb-8">Click the boxes below to upload your photos. They will be securely converted and packed into your configuration file so no external hosting is required!</p>
-                
-                <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
-                    
-                    <div>
-                        <label>Main Hero Image</label>
-                        <div class="image-preview" onclick="document.getElementById('uploadHero').click()">
-                            <span id="text-hero">Click to Upload</span>
-                            <img id="preview-hero" src="" style="display:none;">
-                        </div>
-                        <input type="file" id="uploadHero" accept="image/jpeg, image/png, image/webp" onchange="encodeImage(this, 'hero')">
-                    </div>
-
-                    <div>
-                        <label>Story Photo 1</label>
-                        <div class="image-preview" onclick="document.getElementById('uploadStory1').click()">
-                            <span id="text-story1">Click to Upload</span>
-                            <img id="preview-story1" src="" style="display:none;">
-                        </div>
-                        <input type="file" id="uploadStory1" accept="image/jpeg, image/png, image/webp" onchange="encodeImage(this, 'story1')">
-                    </div>
-
-                    <div>
-                        <label>Story Photo 2</label>
-                        <div class="image-preview" onclick="document.getElementById('uploadStory2').click()">
-                            <span id="text-story2">Click to Upload</span>
-                            <img id="preview-story2" src="" style="display:none;">
-                        </div>
-                        <input type="file" id="uploadStory2" accept="image/jpeg, image/png, image/webp" onchange="encodeImage(this, 'story2')">
-                    </div>
-
-                    <div>
-                        <label>Story Photo 3</label>
-                        <div class="image-preview" onclick="document.getElementById('uploadStory3').click()">
-                            <span id="text-story3">Click to Upload</span>
-                            <img id="preview-story3" src="" style="display:none;">
-                        </div>
-                        <input type="file" id="uploadStory3" accept="image/jpeg, image/png, image/webp" onchange="encodeImage(this, 'story3')">
-                    </div>
-
-                    <div>
-                        <label>Attire Inspiration 1</label>
-                        <div class="image-preview" onclick="document.getElementById('uploadAttire1').click()">
-                            <span id="text-attire1">Click to Upload</span>
-                            <img id="preview-attire1" src="" style="display:none;">
-                        </div>
-                        <input type="file" id="uploadAttire1" accept="image/jpeg, image/png, image/webp" onchange="encodeImage(this, 'attire1')">
-                    </div>
-
-                    <div>
-                        <label>Attire Inspiration 2</label>
-                        <div class="image-preview" onclick="document.getElementById('uploadAttire2').click()">
-                            <span id="text-attire2">Click to Upload</span>
-                            <img id="preview-attire2" src="" style="display:none;">
-                        </div>
-                        <input type="file" id="uploadAttire2" accept="image/jpeg, image/png, image/webp" onchange="encodeImage(this, 'attire2')">
-                    </div>
-
+        <!-- Base Image Uploads -->
+        <div class="card">
+            <h2>Website Photos</h2>
+            <p class="note mb-4" style="margin-bottom: 1.5rem;">Upload the main background image for the top of the website.</p>
+            <div class="form-grid">
+                <div class="form-group full-width">
+                    <label>Hero Background Image</label>
+                    <input type="file" id="heroImage" accept="image/*">
                 </div>
             </div>
+        </div>
 
-            <!-- GENERATE BUTTON -->
-            <button type="submit" class="w-full py-5 bg-[#93A897] text-white rounded-xl uppercase tracking-[0.2em] font-semibold text-lg hover:bg-[#7A8A7D] transition-colors shadow-lg mt-8">
-                Generate & Download config.json
-            </button>
-
-        </form>
-    </div>
+        <button type="submit">Generate config.json</button>
+    </form>
 
     <script>
-        // Store the Base64 strings of the uploaded images
-        const imageVault = {
-            hero: null, story1: null, story2: null, story3: null, attire1: null, attire2: null
+        const imageBase64 = {
+            heroImage: "https://images.unsplash.com/photo-1519225421980-715cb02151ff?ixlib=rb-4.0.3&auto=format&fit=crop&w=2070&q=80",
+            gallery1: "https://images.unsplash.com/photo-1606800052052-a08af7148866?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
+            gallery2: "https://images.unsplash.com/photo-1583939003579-730e3918a45a?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
+            gallery3: "https://images.unsplash.com/photo-1520854221256-17451cc331bf?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80"
         };
 
-        // Fallback images in case the user doesn't upload anything
-        const defaultImages = {
-            hero: "https://images.unsplash.com/photo-1519225421980-715cb02151ff?auto=format&fit=crop&w=2070&q=80",
-            story1: "https://images.unsplash.com/photo-1606800052052-a08af7148866?auto=format&fit=crop&w=800&q=80",
-            story2: "https://images.unsplash.com/photo-1583939003579-730e3918a45a?auto=format&fit=crop&w=800&q=80",
-            story3: "https://images.unsplash.com/photo-1520854221256-17451cc331bf?auto=format&fit=crop&w=800&q=80",
-            attire1: "https://images.unsplash.com/photo-1496747611176-843222e1e57c?auto=format&fit=crop&w=600&q=80",
-            attire2: "https://images.unsplash.com/photo-1594938298596-70f56bf3ac59?auto=format&fit=crop&w=600&q=80"
-        };
-
-        // Handle Image Upload & Base64 Conversion
-        function encodeImage(inputElement, key) {
-            const file = inputElement.files[0];
-            if (!file) return;
-
-            const reader = new FileReader();
-            reader.onload = function(e) {
-                const base64String = e.target.result;
-                imageVault[key] = base64String;
-                
-                // Show preview
-                document.getElementById(`preview-${key}`).src = base64String;
-                document.getElementById(`preview-${key}`).style.display = 'block';
-                document.getElementById(`text-${key}`).style.display = 'none';
-            };
-            reader.readAsDataURL(file);
+        function handleFile(event, key) {
+            const file = event.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    imageBase64[key] = e.target.result;
+                };
+                reader.readAsDataURL(file);
+            }
         }
 
-        // Build the JSON and Trigger Download
-        document.getElementById('weddingConfigForm').addEventListener('submit', function(e) {
-            e.preventDefault();
+        ['heroImage', 'gallery1', 'gallery2', 'gallery3'].forEach(id => {
+            const el = document.getElementById(id);
+            if (el) el.addEventListener('change', (e) => handleFile(e, id));
+        });
 
-            // Construct the exact data structure the Wedding App expects
-            const configData = {
+        document.getElementById('configForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const config = {
                 names: {
                     groom: document.getElementById('groomName').value,
                     bride: document.getElementById('brideName').value
                 },
                 date: document.getElementById('weddingDate').value,
+                hashtag: document.getElementById('hashtag').value,
+                spotifyUrl: document.getElementById('spotifyUrl').value,
                 location: {
-                    time: document.getElementById('ceremonyTime').value,
                     venue: document.getElementById('venueName').value,
+                    region: document.getElementById('venueRegion').value,
                     address: document.getElementById('venueAddress').value,
                     mapUrl: document.getElementById('mapUrl').value
                 },
@@ -228,21 +211,16 @@
                     }
                 ],
                 images: {
-                    hero: imageVault.hero || defaultImages.hero,
+                    hero: imageBase64.heroImage,
                     gallery: [
-                        imageVault.story1 || defaultImages.story1,
-                        imageVault.story2 || defaultImages.story2,
-                        imageVault.story3 || defaultImages.story3
-                    ],
-                    attire: [
-                        imageVault.attire1 || defaultImages.attire1,
-                        imageVault.attire2 || defaultImages.attire2
+                        imageBase64.gallery1,
+                        imageBase64.gallery2,
+                        imageBase64.gallery3
                     ]
                 }
             };
 
-            // Package as a JSON file download
-            const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(configData, null, 2));
+            const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(config, null, 2));
             const downloadAnchorNode = document.createElement('a');
             downloadAnchorNode.setAttribute("href", dataStr);
             downloadAnchorNode.setAttribute("download", "config.json");
