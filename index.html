@@ -1,0 +1,461 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Allen & Marry - Wedding Invitation</title>
+    <!-- Load Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Load React & ReactDOM -->
+    <script src="https://unpkg.com/react@18/umd/react.production.min.js" crossorigin></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js" crossorigin></script>
+    <!-- Load Babel to compile JSX -->
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+</head>
+<body>
+    <div id="root"></div>
+
+    <script type="text/babel">
+        const { useState, useEffect } = React;
+
+        // --- Custom Icon Components ---
+        const Icon = ({ name, size = 24, className = "", strokeWidth = 2 }) => {
+            const paths = {
+                Heart: <path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/>,
+                MapPin: <><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></>,
+                Calendar: <><rect width="18" height="18" x="3" y="4" rx="2" ry="2"/><line x1="16" x2="16" y1="2" y2="6"/><line x1="8" x2="8" y1="2" y2="6"/><line x1="3" x2="21" y1="10" y2="10"/></>,
+                Clock: <><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></>,
+                Utensils: <><path d="M3 2v7c0 1.1.9 2 2 2h4a2 2 0 0 0 2-2V2"/><path d="M7 2v20"/><path d="M21 15V2v0a5 5 0 0 0-5 5v6c0 1.1.9 2 2 2h3Zm0 0v7"/></>,
+                Music: <><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></>,
+                ChevronDown: <polyline points="6 9 12 15 18 9"/>,
+                Camera: <><path d="M14.5 4h-5L7 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3l-2.5-3z"/><circle cx="12" cy="13" r="3"/></>,
+                Sparkles: <><path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z"/><path d="M5 3v4"/><path d="M19 17v4"/><path d="M3 5h4"/><path d="M17 19h4"/></>,
+                Flower2: <><path d="M12 5a3 3 0 1 1-3 3m3-3a3 3 0 1 0 3 3m-3-3v14m-4 0a4 4 0 0 0 4-4m0 4a4 4 0 0 1-4-4"/></>,
+                Navigation: <polygon points="3 11 22 2 13 21 11 13 3 11"/>,
+                Loader2: <path className="animate-spin" d="M21 12a9 9 0 1 1-6.219-8.56"/>
+            };
+            return (
+                <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={strokeWidth} strokeLinecap="round" strokeLinejoin="round" className={className}>
+                    {paths[name]}
+                </svg>
+            );
+        };
+
+        const Heart = (props) => <Icon name="Heart" {...props} />;
+        const MapPin = (props) => <Icon name="MapPin" {...props} />;
+        const Calendar = (props) => <Icon name="Calendar" {...props} />;
+        const Clock = (props) => <Icon name="Clock" {...props} />;
+        const Utensils = (props) => <Icon name="Utensils" {...props} />;
+        const Music = (props) => <Icon name="Music" {...props} />;
+        const ChevronDown = (props) => <Icon name="ChevronDown" {...props} />;
+        const Camera = (props) => <Icon name="Camera" {...props} />;
+        const Sparkles = (props) => <Icon name="Sparkles" {...props} />;
+        const Flower2 = (props) => <Icon name="Flower2" {...props} />;
+        const Navigation = (props) => <Icon name="Navigation" {...props} />;
+        const Loader2 = (props) => <Icon name="Loader2" {...props} />;
+
+        // --- Main Application ---
+        function WeddingInvitation() {
+            const [config, setConfig] = useState(null);
+            const [introState, setIntroState] = useState('initial');
+            const [timeLeft, setTimeLeft] = useState({ days: 0, hours: 0, minutes: 0, seconds: 0 });
+            const [isScrolled, setIsScrolled] = useState(false);
+            const [loadingConfig, setLoadingConfig] = useState(true);
+
+            // Fetch Config
+            useEffect(() => {
+                fetch('config.json')
+                    .then(response => {
+                        if (!response.ok) throw new Error("Config not found");
+                        return response.json();
+                    })
+                    .then(data => {
+                        setConfig(data);
+                        setLoadingConfig(false);
+                    })
+                    .catch(error => {
+                        console.log("Using default fallback data because config.json wasn't found.");
+                        // Fallback data matching the required specs
+                        setConfig({
+                            names: { groom: "Allen", bride: "Marry" },
+                            date: "2026-09-08",
+                            location: {
+                                time: "3:00 PM Sharp", 
+                                venue: "The Stable Cottage", 
+                                address: "720 Peak Road, Helensville, North West Auckland",
+                                mapUrl: "https://www.google.com/maps/embed?pb=!3m2!1sen!2snz!4v1788342948558!5m2!1sen!2snz!6m8!1m7!1sWIFkBaE6nwyG10RKQSE5mQ!2m2!1d-36.68089580634993!2d174.5099508613131!3f285.1440468418404!4f-0.6514328407149321!5f0.7820865974627469"
+                            },
+                            story: [
+                                { date: "February 2020", title: "The First Chat", text: "We started talking online and getting to know each other." },
+                                { date: "July 2020", title: "The First Meeting", text: "We finally met in person with her family. It was during COVID times and she needed a ride back home too." },
+                                { date: "April 2026", title: "The Proposal", text: "Allen finally popped the question on Lake Tekapo." }
+                            ],
+                            images: {
+                                hero: "https://images.unsplash.com/photo-1519225421980-715cb02151ff?auto=format&fit=crop&w=2070&q=80",
+                                gallery: [
+                                    "https://images.unsplash.com/photo-1606800052052-a08af7148866?auto=format&fit=crop&w=800&q=80",
+                                    "https://images.unsplash.com/photo-1583939003579-730e3918a45a?auto=format&fit=crop&w=800&q=80",
+                                    "https://images.unsplash.com/photo-1520854221256-17451cc331bf?auto=format&fit=crop&w=800&q=80"
+                                ],
+                                attire: [
+                                    "https://images.unsplash.com/photo-1496747611176-843222e1e57c?auto=format&fit=crop&w=600&q=80",
+                                    "https://images.unsplash.com/photo-1594938298596-70f56bf3ac59?auto=format&fit=crop&w=600&q=80"
+                                ]
+                            }
+                        });
+                        setLoadingConfig(false);
+                    });
+            }, []);
+
+            // Animation Sequence
+            const openEnvelope = () => {
+                if (introState !== 'initial') return;
+                setIntroState('opening');
+                setTimeout(() => setIntroState('extracting'), 800);
+                setTimeout(() => setIntroState('unfolding'), 1800);
+                setTimeout(() => setIntroState('reading'), 2800);
+                setTimeout(() => setIntroState('fading'), 5800);
+                setTimeout(() => setIntroState('done'), 6800);
+            };
+
+            useEffect(() => {
+                if (introState !== 'done') document.body.style.overflow = 'hidden';
+                else document.body.style.overflow = 'auto';
+                return () => { document.body.style.overflow = 'auto'; };
+            }, [introState]);
+
+            useEffect(() => {
+                const handleScroll = () => setIsScrolled(window.scrollY > 50);
+                window.addEventListener('scroll', handleScroll);
+                return () => window.removeEventListener('scroll', handleScroll);
+            }, []);
+
+            // Countdown Logic
+            useEffect(() => {
+                if (!config) return;
+                
+                const targetDate = new Date(`${config.date}T15:00:00`).getTime();
+                
+                const calculateTime = () => {
+                    const now = new Date().getTime();
+                    const difference = targetDate - now;
+                    if (difference > 0) {
+                        return {
+                            days: Math.floor(difference / (1000 * 60 * 60 * 24)),
+                            hours: Math.floor((difference / (1000 * 60 * 60)) % 24),
+                            minutes: Math.floor((difference / 1000 / 60) % 60),
+                            seconds: Math.floor((difference / 1000) % 60)
+                        };
+                    }
+                    return { days: 0, hours: 0, minutes: 0, seconds: 0 };
+                };
+
+                setTimeLeft(calculateTime());
+                const timer = setInterval(() => setTimeLeft(calculateTime()), 1000);
+                return () => clearInterval(timer);
+            }, [config]);
+
+            const scrollTo = (id) => {
+                const element = document.getElementById(id);
+                if (element) element.scrollIntoView({ behavior: 'smooth' });
+            };
+
+            const formatDateDisplay = (dateString) => {
+                const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+                return new Date(dateString).toLocaleDateString('en-NZ', options);
+            };
+
+            const getEnvelopeClasses = () => {
+                switch(introState) {
+                    case 'extracting':
+                    case 'unfolding':
+                    case 'reading': return 'translate-y-[600px] opacity-0 transition-all duration-[1500ms] ease-in pointer-events-none';
+                    case 'fading': return 'hidden';
+                    default: return 'translate-y-0 opacity-100 transition-all duration-500';
+                }
+            };
+
+            if (loadingConfig || !config) {
+                return <div className="min-h-screen flex items-center justify-center bg-[#FDFCF8]"><Loader2 className="animate-spin text-[#D4A5A5]" size={48} /></div>;
+            }
+
+            return (
+                <div className="min-h-screen bg-[#FDFCF8] text-[#3A4A3E] font-sans selection:bg-[#EAD5D5] selection:text-[#2A3B2E] relative">
+                    
+                    {/* ---------------- DRAMATIC FOLDED ENVELOPE INTRO ---------------- */}
+                    {introState !== 'done' && (
+                        <div className={`fixed inset-0 z-[9999] flex flex-col items-center justify-center bg-[#150f0f] transition-opacity duration-1000 cursor-pointer ${introState === 'fading' ? 'opacity-0 pointer-events-none' : 'opacity-100'}`} onClick={openEnvelope}>
+                            <div className={`absolute top-[15%] text-[#D4A5A5] uppercase tracking-[0.4em] text-sm animate-pulse transition-opacity ${introState !== 'initial' ? 'opacity-0' : 'opacity-100'}`}>
+                                Tap anywhere to open
+                            </div>
+
+                            <div className="relative w-[340px] h-[230px] flex justify-center items-center" style={{ perspective: '1200px' }}>
+                                <div className={`absolute inset-0 bg-[#7d1414] rounded-md shadow-inner border border-[#6b1010] z-10 ${getEnvelopeClasses()}`}></div>
+
+                                <div className={`absolute w-[280px] h-[320px] transition-all duration-[1200ms] ease-in-out pointer-events-none`}
+                                    style={{
+                                        transform: introState === 'initial' || introState === 'opening' ? 'translateY(50px) scale(0.85)' : 
+                                                introState === 'extracting' ? 'translateY(-80px) scale(0.95)' :
+                                                introState === 'unfolding' ? 'translateY(-40px) scale(1)' :
+                                                'translateY(-40px) scale(1.15)',
+                                        opacity: introState === 'fading' ? 0 : 1,
+                                        zIndex: 20,
+                                        perspective: '1200px'
+                                    }}>
+                                    <div className="absolute top-0 left-0 w-full h-[160px] bg-[#FDFCF8] rounded-t-md p-6 flex flex-col items-center justify-end border-x border-t border-[#EAD5D5] z-10 shadow-sm">
+                                    <div className="absolute top-0 left-0 w-full h-3 bg-[#93A897] rounded-t-md"></div>
+                                    <Flower2 size={32} className="text-[#D4A5A5] mb-3 opacity-80" strokeWidth={1.5} />
+                                    <p className="uppercase tracking-[0.2em] text-[#93A897] text-[10px] mb-1">You are invited to</p>
+                                    </div>
+
+                                    <div className="absolute top-[160px] left-0 w-full h-[160px] origin-top transition-transform duration-1000 ease-[cubic-bezier(0.34,1.56,0.64,1)] z-20 shadow-2xl"
+                                        style={{ transformStyle: 'preserve-3d', transform: introState === 'initial' || introState === 'opening' || introState === 'extracting' ? 'rotateX(-180deg)' : 'rotateX(0deg)' }}>
+                                        <div className="absolute inset-0 bg-[#F6ECEC] rounded-md border border-[#EAD5D5] flex items-center justify-center" style={{ backfaceVisibility: 'hidden', transform: 'rotateX(180deg)' }}>
+                                            <div className="w-16 h-16 rounded-full border border-[#D4A5A5] flex items-center justify-center bg-[#FDFCF8] shadow-sm">
+                                            <span className="font-serif text-[#93A897] text-xl tracking-wider">{config.names.groom[0]}&{config.names.bride[0]}</span>
+                                            </div>
+                                        </div>
+
+                                        <div className="absolute inset-0 bg-[#FDFCF8] rounded-b-md border-x border-b border-[#EAD5D5] p-6 flex flex-col items-center justify-start" style={{ backfaceVisibility: 'hidden', transform: 'rotateX(0deg)' }}>
+                                        <h2 className="font-serif text-2xl text-[#2A3B2E] text-center leading-tight mb-4 mt-2">
+                                            The Wedding of<br/>{config.names.groom} & {config.names.bride}
+                                        </h2>
+                                        <div className="w-12 h-[1px] bg-[#D4A5A5] mb-4"></div>
+                                        <p className="text-[#93A897] uppercase tracking-widest text-[9px] text-center leading-relaxed">
+                                            8 Sept 2026<br/>Auckland, New Zealand
+                                        </p>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div className={`absolute inset-0 z-30 pointer-events-none drop-shadow-2xl ${getEnvelopeClasses()}`}>
+                                <div className="absolute top-0 left-0 w-full h-full bg-[#A31D1D] rounded-bl-md" style={{ clipPath: 'polygon(0 0, 50% 55%, 0 100%)' }}></div>
+                                <div className="absolute top-0 left-0 w-full h-full bg-[#A31D1D] rounded-br-md" style={{ clipPath: 'polygon(100% 0, 50% 55%, 100% 100%)' }}></div>
+                                <div className="absolute top-0 left-0 w-full h-full bg-[#B82222] rounded-b-md" style={{ clipPath: 'polygon(0 100%, 50% 55%, 100% 100%)' }}></div>
+                                </div>
+
+                                <div className={`absolute top-0 left-0 w-full h-full origin-top transition-transform duration-700 ease-in-out z-40 ${getEnvelopeClasses()} ${(introState !== 'initial') ? 'rotate-x-180' : ''}`} style={{ transformStyle: 'preserve-3d' }}>
+                                <div className="w-full h-[65%] bg-[#C92A2A] rounded-t-md" style={{ clipPath: 'polygon(0 0, 100% 0, 50% 100%)', backfaceVisibility: 'hidden' }}></div>
+                                <div className="w-full h-[65%] bg-[#8B1717] rounded-t-md absolute top-0 left-0" style={{ clipPath: 'polygon(0 0, 100% 0, 50% 100%)', transform: 'rotateY(180deg)', backfaceVisibility: 'hidden' }}></div>
+                                
+                                <div className={`absolute top-[65%] left-1/2 -translate-x-1/2 -translate-y-1/2 w-16 h-16 bg-gradient-to-br from-[#E6C27A] to-[#A37A2C] rounded-full flex items-center justify-center shadow-xl border-2 border-[#D4AF37] transition-opacity duration-300 ${introState !== 'initial' ? 'opacity-0' : 'opacity-100'}`} style={{ backfaceVisibility: 'hidden' }}>
+                                    <div className="w-14 h-14 rounded-full border border-[#B38A36]/50 flex items-center justify-center">
+                                    <span className="font-serif text-[#5c4411] text-xl font-bold">{config.names.groom[0]}&{config.names.bride[0]}</span>
+                                    </div>
+                                </div>
+                                </div>
+                            </div>
+                        </div>
+                    )}
+
+                    {/* ---------------- MAIN APP ---------------- */}
+                    
+                    {/* Floating Navigation */}
+                    <nav className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ${isScrolled ? 'bg-white/95 backdrop-blur-md shadow-sm py-4' : 'bg-transparent py-6'}`}>
+                        <div className="max-w-5xl mx-auto px-4 flex justify-center items-center space-x-4 md:space-x-10 text-xs md:text-sm uppercase tracking-[0.1em] md:tracking-[0.2em] text-[#7A8A7D] font-medium">
+                        <button onClick={() => scrollTo('home')} className="hover:text-[#D4A5A5] transition-colors">Home</button>
+                        <button onClick={() => scrollTo('gallery')} className="hover:text-[#D4A5A5] transition-colors">Story</button>
+                        <button onClick={() => scrollTo('details')} className="hover:text-[#D4A5A5] transition-colors">Details</button>
+                        </div>
+                    </nav>
+
+                    {/* Hero Section */}
+                    <section id="home" className="relative min-h-screen flex flex-col items-center justify-center px-4 overflow-hidden">
+                        <div className="absolute inset-0 z-0">
+                        <img src={config.images.hero} alt="Couple" className="w-full h-full object-cover object-center opacity-40" />
+                        <div className="absolute inset-0 bg-gradient-to-b from-[#FDFCF8]/80 via-[#FDFCF8]/60 to-[#FDFCF8]"></div>
+                        </div>
+
+                        <div className="z-10 text-center flex flex-col items-center space-y-8 max-w-4xl mx-auto mt-16 p-8 bg-white/40 backdrop-blur-sm rounded-3xl border border-white/50 shadow-2xl">
+                        <p className="uppercase tracking-[0.3em] text-[#5A6A5E] text-sm md:text-base animate-fade-in font-bold">
+                            {formatDateDisplay(config.date)}
+                        </p>
+                        <h1 className="font-serif text-6xl md:text-8xl lg:text-9xl text-[#2A3B2E] leading-tight tracking-tight shadow-sm">
+                            {config.names.groom} & {config.names.bride}
+                        </h1>
+                        
+                        <div className="flex items-center space-x-6 text-[#D4A5A5]">
+                            <span className="w-16 h-[1px] bg-[#93A897]"></span>
+                            <Flower2 size={24} className="text-[#D4A5A5]" strokeWidth={1.5} />
+                            <span className="w-16 h-[1px] bg-[#93A897]"></span>
+                        </div>
+                        
+                        <div className="space-y-2 text-center animate-fade-in animation-delay-500">
+                            <p className="text-xl md:text-3xl font-serif italic text-[#3A4A3E]">We are getting married</p>
+                            <p className="text-lg md:text-xl text-[#5A6A5E] uppercase tracking-widest font-medium">Auckland, New Zealand</p>
+                        </div>
+                        </div>
+
+                        <div className="absolute bottom-8 z-10 animate-bounce cursor-pointer text-[#5A6A5E] hover:text-[#D4A5A5] transition-colors" onClick={() => scrollTo('countdown')}>
+                        <ChevronDown size={36} strokeWidth={1.5} />
+                        </div>
+                    </section>
+
+                    {/* Countdown Section */}
+                    <section id="countdown" className="py-24 bg-white px-4 border-b border-[#F0EBEB]">
+                        <div className="max-w-4xl mx-auto text-center">
+                        <p className="uppercase tracking-[0.2em] text-[#D4A5A5] text-sm mb-4">The Countdown</p>
+                        <h2 className="font-serif text-4xl md:text-5xl text-[#2A3B2E] mb-16">Waiting for the Big Day</h2>
+                        
+                        <div className="flex flex-wrap justify-center gap-4 md:gap-8">
+                            {[{ label: 'Days', value: timeLeft.days }, { label: 'Hours', value: timeLeft.hours }, { label: 'Minutes', value: timeLeft.minutes }, { label: 'Seconds', value: timeLeft.seconds }].map((unit, idx) => (
+                            <div key={idx} className="bg-[#FDFCF8] w-24 h-24 md:w-36 md:h-36 flex flex-col items-center justify-center rounded-full shadow-sm border border-[#EAD5D5] transform transition hover:scale-105">
+                                <span className="font-serif text-3xl md:text-5xl text-[#2A3B2E] mb-1">{unit.value}</span>
+                                <span className="text-xs md:text-sm uppercase tracking-[0.2em] text-[#93A897]">{unit.label}</span>
+                            </div>
+                            ))}
+                        </div>
+                        </div>
+                    </section>
+
+                    {/* Photo Gallery & Story Section */}
+                    <section id="gallery" className="py-24 px-4 bg-[#F8FAF8]">
+                        <div className="max-w-6xl mx-auto">
+                        <div className="text-center mb-16">
+                            <p className="uppercase tracking-[0.2em] text-[#D4A5A5] text-sm mb-4">Our Memories</p>
+                            <h2 className="font-serif text-4xl md:text-5xl text-[#2A3B2E]">The Happy Couple</h2>
+                        </div>
+
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-20">
+                            {config.images.gallery.map((imgSrc, idx) => (
+                                <div key={idx} className={`h-[400px] rounded-2xl overflow-hidden shadow-lg group ${idx === 1 ? 'md:-translate-y-8' : ''}`}>
+                                    <img src={imgSrc} alt={`Gallery ${idx + 1}`} className="w-full h-full object-cover transform group-hover:scale-110 transition-transform duration-700" />
+                                </div>
+                            ))}
+                        </div>
+
+                        <div className="max-w-3xl mx-auto space-y-12 relative before:absolute before:inset-0 before:ml-5 before:-translate-x-px md:before:mx-auto md:before:translate-x-0 before:h-full before:w-0.5 before:bg-gradient-to-b before:from-transparent before:via-[#93A897] before:to-transparent">
+                            {config.story.map((storyItem, idx) => {
+                                const icons = [<Heart size={16} />, <Sparkles size={16} />, <Camera size={16} />];
+                                return (
+                                    <div key={idx} className="relative flex items-center justify-between md:justify-normal md:odd:flex-row-reverse">
+                                        <div className={`flex items-center justify-center w-10 h-10 rounded-full border-4 border-[#F8FAF8] text-white shadow-md shrink-0 md:order-1 ${idx % 2 === 0 ? 'bg-[#93A897] md:-translate-x-1/2' : 'bg-[#D4A5A5] md:translate-x-1/2'}`}>
+                                            {icons[idx % icons.length]}
+                                        </div>
+                                        <div className="w-[calc(100%-4rem)] md:w-[calc(50%-2.5rem)] bg-white p-6 rounded-2xl shadow-sm border border-[#E8ECE6]">
+                                            <div className={`font-medium tracking-widest text-xs uppercase mb-1 ${idx % 2 === 0 ? 'text-[#D4A5A5]' : 'text-[#93A897]'}`}>{storyItem.date}</div>
+                                            <h3 className="font-serif text-xl text-[#2A3B2E] mb-2">{storyItem.title}</h3>
+                                            <p className="text-[#6B7B6D] text-sm">{storyItem.text}</p>
+                                        </div>
+                                    </div>
+                                );
+                            })}
+                        </div>
+                        </div>
+                    </section>
+
+                    {/* Details Section */}
+                    <section id="details" className="py-24 px-4 bg-white relative">
+                        <div className="max-w-6xl mx-auto relative z-10">
+                        <div className="text-center mb-16">
+                            <p className="uppercase tracking-[0.2em] text-[#93A897] text-sm mb-4">When & Where</p>
+                            <h2 className="font-serif text-4xl md:text-5xl text-[#2A3B2E] mb-6">Event Details</h2>
+                            <p className="text-[#6B7B6D] max-w-xl mx-auto">Join us for a beautiful afternoon ceremony followed by an evening of dinner and dancing.</p>
+                        </div>
+
+                        <div className="max-w-3xl mx-auto bg-[#FDFCF8] rounded-3xl overflow-hidden shadow-lg border border-[#EAD5D5] mb-16">
+                            <div className="p-8 md:p-12 text-center">
+                                <Flower2 size={36} className="text-[#D4A5A5] mx-auto mb-6" />
+                                <h3 className="font-serif text-3xl text-[#2A3B2E] mb-2">{config.location.venue}</h3>
+                                <p className="text-[#6B7B6D] mb-8">{config.location.address}</p>
+                                
+                                <div className="flex flex-col md:flex-row justify-center items-center gap-8 text-[#5A6A5E] mb-8">
+                                    <div className="flex items-center">
+                                        <Clock className="w-5 h-5 mr-3 text-[#D4A5A5]" />
+                                        <span className="font-medium text-[#2A3B2E]">{config.location.time}</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* Interactive Map */}
+                        <div className="w-full h-[400px] rounded-3xl overflow-hidden shadow-lg border border-[#E8ECE6] mb-6 relative group">
+                            <iframe 
+                            src={config.location.mapUrl}
+                            width="100%" 
+                            height="100%" 
+                            style={{ border: 0 }} 
+                            allowFullScreen="" 
+                            loading="lazy" 
+                            referrerPolicy="no-referrer-when-downgrade"
+                            title="Wedding Map"
+                            className="z-10 relative grayscale-[30%] contrast-75 hover:grayscale-0 hover:contrast-100 transition-all duration-700"
+                            ></iframe>
+                        </div>
+
+                        {/* Navigation Buttons */}
+                        <div className="flex flex-col sm:flex-row justify-center items-center gap-4 mb-16">
+                            <a 
+                            href={`https://maps.google.com/?q=${encodeURIComponent(config.location.address)}`}
+                            target="_blank" 
+                            rel="noopener noreferrer"
+                            className="flex items-center space-x-2 px-6 py-3 bg-white border border-[#EAD5D5] text-[#5A6A5E] rounded-full hover:bg-[#FDFCF8] hover:border-[#D4A5A5] transition-all shadow-sm w-full sm:w-auto justify-center group"
+                            >
+                            <MapPin size={18} className="text-[#D4A5A5] group-hover:scale-110 transition-transform" />
+                            <span className="text-sm uppercase tracking-widest font-medium">Open in Google Maps</span>
+                            </a>
+                            <a 
+                            href={`https://waze.com/ul?q=${encodeURIComponent(config.location.address)}`}
+                            target="_blank" 
+                            rel="noopener noreferrer"
+                            className="flex items-center space-x-2 px-6 py-3 bg-white border border-[#EAD5D5] text-[#5A6A5E] rounded-full hover:bg-[#FDFCF8] hover:border-[#93A897] transition-all shadow-sm w-full sm:w-auto justify-center group"
+                            >
+                            <Navigation size={18} className="text-[#93A897] group-hover:scale-110 transition-transform" />
+                            <span className="text-sm uppercase tracking-widest font-medium">Open in Waze</span>
+                            </a>
+                        </div>
+                        
+                        {/* Suggested Attire Block */}
+                        <div className="bg-[#FDFCF8] p-8 md:p-14 rounded-3xl text-center border border-[#EAD5D5] shadow-lg shadow-[#EAD5D5]/20 max-w-5xl mx-auto">
+                            <h4 className="font-serif text-3xl md:text-4xl text-[#2A3B2E] mb-4">Suggested Attire: Spring Elegance</h4>
+                            <p className="text-[#6B7B6D] mb-10 text-lg max-w-2xl mx-auto">We kindly request our guests to dress in beautiful spring garden colors. Think soft pastels, vibrant floral prints, sage greens, and warm neutral tones.</p>
+                            
+                            <div className="flex flex-wrap justify-center gap-6 md:gap-12 mb-12">
+                            <div className="flex flex-col items-center"><div className="w-16 h-16 rounded-full bg-[#D4A5A5] shadow-inner mb-3 border-[3px] border-white ring-1 ring-[#EAD5D5]"></div><span className="text-xs uppercase tracking-widest text-[#7A8A7D]">Blush</span></div>
+                            <div className="flex flex-col items-center"><div className="w-16 h-16 rounded-full bg-[#93A897] shadow-inner mb-3 border-[3px] border-white ring-1 ring-[#E8ECE6]"></div><span className="text-xs uppercase tracking-widest text-[#7A8A7D]">Sage</span></div>
+                            <div className="flex flex-col items-center"><div className="w-16 h-16 rounded-full bg-[#B57D7D] shadow-inner mb-3 border-[3px] border-white ring-1 ring-[#F0EBEB]"></div><span className="text-xs uppercase tracking-widest text-[#7A8A7D]">Dusty Rose</span></div>
+                            <div className="flex flex-col items-center"><div className="w-16 h-16 rounded-full bg-[#DCE5DE] shadow-inner mb-3 border-[3px] border-white ring-1 ring-[#E8ECE6]"></div><span className="text-xs uppercase tracking-widest text-[#7A8A7D]">Mist</span></div>
+                            <div className="flex flex-col items-center"><div className="w-16 h-16 rounded-full bg-[#EADDCD] shadow-inner mb-3 border-[3px] border-white ring-1 ring-[#F0EBEB]"></div><span className="text-xs uppercase tracking-widest text-[#7A8A7D]">Soft Gold</span></div>
+                            </div>
+
+                            <div className="pt-10 border-t border-[#E8ECE6]">
+                            <p className="uppercase tracking-[0.2em] text-[#93A897] text-xs mb-8">Attire Inspiration</p>
+                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 max-w-2xl mx-auto">
+                                {config.images.attire.map((imgSrc, idx) => (
+                                    <div key={idx} className="h-[300px] rounded-2xl overflow-hidden shadow-sm group relative">
+                                        <img src={imgSrc} alt={`Attire Inspiration ${idx + 1}`} className="w-full h-full object-cover transform group-hover:scale-105 transition-transform duration-700" />
+                                        <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end justify-center pb-4"><span className="text-white text-sm font-medium tracking-wide">Inspiration</span></div>
+                                    </div>
+                                ))}
+                            </div>
+                            </div>
+                        </div>
+                        </div>
+                    </section>
+
+                    <footer className="py-16 text-center bg-[#1F2B22] text-[#93A897]">
+                        <Flower2 size={32} className="mx-auto mb-6 text-[#D4A5A5] opacity-80" strokeWidth={1} />
+                        <h2 className="font-serif text-4xl text-[#FDFCF8] mb-6">{config.names.groom[0]} & {config.names.bride[0]}</h2>
+                        <p className="text-xs opacity-60 mt-8">Made with Love &bull; {new Date(config.date).getFullYear()}</p>
+                    </footer>
+
+                    <style dangerouslySetInnerHTML={{__html: `
+                        @keyframes fadeIn { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
+                        @keyframes blob { 0% { transform: translate(0px, 0px) scale(1); } 33% { transform: translate(30px, -50px) scale(1.1); } 66% { transform: translate(-20px, 20px) scale(0.9); } 100% { transform: translate(0px, 0px) scale(1); } }
+                        .animate-fade-in { animation: fadeIn 1s cubic-bezier(0.4, 0, 0.2, 1) forwards; }
+                        .animate-blob { animation: blob 15s infinite alternate; }
+                        .animation-delay-500 { animation-delay: 500ms; }
+                        .animation-delay-1000 { animation-delay: 1000ms; }
+                        .animation-delay-2000 { animation-delay: 2000ms; }
+                        .rotate-x-180 { transform: rotateX(180deg); }
+                    `}} />
+                </div>
+            );
+        }
+
+        // Render the app
+        const root = ReactDOM.createRoot(document.getElementById('root'));
+        root.render(<WeddingInvitation />);
+    </script>
+</body>
+</html>
