@@ -57,16 +57,20 @@
             const [isScrolled, setIsScrolled] = useState(false);
             const [loadingConfig, setLoadingConfig] = useState(true);
 
-            // Fetch Config
+            // Fetch Config with Fallback
             useEffect(() => {
                 fetch('config.json')
                     .then(response => {
                         if (!response.ok) throw new Error("Config not found");
                         return response.json();
                     })
-                    .then(data => { setConfig(data); setLoadingConfig(false); })
+                    .then(data => { 
+                        setConfig(data); 
+                        setLoadingConfig(false); 
+                    })
                     .catch(error => {
                         console.log("Using default fallback data because config.json wasn't found.");
+                        // ROBUST FALLBACK: Guarantees the app renders even if config.json is missing on GitHub
                         setConfig({
                             names: { groom: "Allen", bride: "Marry" },
                             date: "2026-09-08",
@@ -197,7 +201,7 @@
                                         </h2>
                                         <div className="w-12 h-[1px] bg-[#D4A5A5] mb-4"></div>
                                         <p className="text-[#93A897] uppercase tracking-widest text-[9px] text-center leading-relaxed">
-                                            {formattedWeddingDate}<br/>New Zealand
+                                            8 September 2026<br/>New Zealand
                                         </p>
                                         </div>
                                     </div>
