@@ -416,7 +416,7 @@
                             <MapPin size={18} className="text-[#D4A5A5] group-hover:scale-110 transition-transform" />
                             <span className="text-sm uppercase tracking-widest font-medium">Open in Google Maps</span>
                             </a>
-                            <a href={`https://waze.com/ul?q=${encodeURIComponent(config.location.ceremony.name)}`} target="_blank" rel="noopener noreferrer" className="flex items-center space-x-2 px-6 py-3 bg-white border border-[#EAD5D5] text-[#5A6A5E] rounded-full hover:bg-[#FDFCF8] hover:border-[#93A897] transition-all shadow-sm w-full sm:w-auto justify-center group">
+                            <a href={`https://waze.com/ul?q=${encodeURIComponent(config.location.ceremony.name + ' ' + config.location.ceremony.address)}`} target="_blank" rel="noopener noreferrer" className="flex items-center space-x-2 px-6 py-3 bg-white border border-[#EAD5D5] text-[#5A6A5E] rounded-full hover:bg-[#FDFCF8] hover:border-[#93A897] transition-all shadow-sm w-full sm:w-auto justify-center group">
                             <Navigation size={18} className="text-[#93A897] group-hover:scale-110 transition-transform" />
                             <span className="text-sm uppercase tracking-widest font-medium">Open in Waze</span>
                             </a>
